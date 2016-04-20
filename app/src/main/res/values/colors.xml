@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="colorPrimary">#3F51B5</color>
-    <color name="colorPrimaryDark">#303F9F</color>
+    <color name="colorPrimary">#7AD1CA</color>
+    <color name="colorPrimaryDark">#6BB7B1</color>
     <color name="colorAccent">#FF4081</color>
-    <color name="green-runator">#7AD1CA</color>
+    <color name="greenRunator">#7AD1CA</color>
+    <color name="greenRunatorDark">#88C396</color>
 </resources>
