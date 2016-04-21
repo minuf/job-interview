@@ -1,0 +1,8 @@
+REFERENCIAS:
+
+Libreria volley:
+http://developer.android.com/intl/es/training/volley/requestqueue.html
+Auth:
+http://stackoverflow.com/questions/11068892/oauth-2-0-authorization-header
+Servicios android:
+http://developer.android.com/intl/es/training/run-background-service/index.html
