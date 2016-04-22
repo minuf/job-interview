@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
 <android.support.v7.widget.CardView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
-    android:layout_height="wrap_content">
+    android:layout_height="wrap_content"
+    android:layout_margin="10dp">
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -23,7 +24,8 @@
                 <com.example.jorge.job_interview.ui.views.RoundedImageView
                     android:id="@+id/iv_user_thumb"
                     android:layout_width="?android:attr/actionBarSize"
-                    android:layout_height="?android:attr/actionBarSize" />
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:scaleType="fitXY"/>
 
             </LinearLayout>
 
@@ -102,13 +104,13 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/tv_run_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Distancia"
                     android:textColor="#50000000" />
 
                 <TextView
+                    android:id="@+id/tv_run_distance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8.1"
@@ -130,13 +132,13 @@
                 android:orientation="vertical">
 
                 <TextView
-                    android:id="@+id/run_rhythm"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Ritmo"
                     android:textColor="#50000000" />
 
                 <TextView
+                    android:id="@+id/tv_run_pace"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="8.1"
@@ -174,13 +176,25 @@
         </LinearLayout>
 
         <!--Map Layout-->
-        <LinearLayout
+        <RelativeLayout
             android:layout_width="match_parent"
             android:layout_height="200dp"
             android:layout_marginTop="10dp"
             android:background="#30330040">
-
-        </LinearLayout>
+            <LinearLayout
+                android:id="@+id/map_layout"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="vertical">
+            </LinearLayout>
+            <ImageView
+                android:id="@+id/iv_run_thumb"
+                android:layout_width="?android:attr/actionBarSize"
+                android:layout_height="?android:attr/actionBarSize"
+                android:layout_alignParentBottom="true"
+                android:layout_alignParentRight="true"
+                />
+        </RelativeLayout>
 
         <!-- Layout for likes -->
         <LinearLayout
@@ -211,7 +225,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/run_likes"
+                    android:id="@+id/tv_run_likes"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="16 "
@@ -235,12 +249,14 @@
                 android:padding="5dp">
 
                 <ImageView
+                    android:id="@+id/btn_comment"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@mipmap/ic_comment" />
 
                 <ImageView
+                    android:id="@+id/btn_like"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
@@ -269,7 +285,7 @@
                 android:layout_weight="2">
 
                 <com.example.jorge.job_interview.ui.views.RoundedImageView
-                    android:id="@+id/iv_comment_user_thumb"
+                    android:id="@+id/iv_comment_runner_thumb"
                     android:layout_width="?android:attr/actionBarSize"
                     android:layout_height="?android:attr/actionBarSize" />
 
@@ -293,7 +309,7 @@
                     android:textStyle="bold" />
 
                 <TextView
-                    android:id="@+id/tv_comment_user_comment"
+                    android:id="@+id/tv_comment_runner_comment"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Comentario"

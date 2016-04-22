@@ -29,4 +29,6 @@ dependencies {
     compile 'com.android.support:palette-v7:23.2.1'
     //import volley library for http requests
     compile 'com.mcxiaoke.volley:library-aar:1.0.+'
+    //Picasso library for load images easy
+    compile 'com.squareup.picasso:picasso:2.5.2'
 }
