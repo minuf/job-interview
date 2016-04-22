@@ -116,17 +116,16 @@ public class ConnectionService extends IntentService{
                         lastCommentUser = lastComment.getJSONObject("user");
                         commentList.add(new Comment(lastComment.getString("id"),
                                 lastCommentUser.getString("id"),
+                                card.getString("run_id"),
                                 lastCommentUser.getString("photo_thumb"),
                                 lastCommentUser.getString("name"),
                                 lastComment.getString("comment")
                         ));
                     }
-
-
-
                     runList.add(new Run(
+                            card.getString("run_id"),
                             dateTime.getString("date"),
-                            card.getInt("distance"),
+                            card.getDouble("distance"),
                             pace.getInt("hours"),
                             pace.getInt("minutes"),
                             pace.getInt("seconds"),
@@ -136,7 +135,8 @@ public class ConnectionService extends IntentService{
                             card.getString("city"),
                             runnatorUser.getString("photo_thumb"),
                             likes.getInt("count"),
-                            commentList
+                            commentList,
+                            card.getString("user_id")
                     ));
 
                     //System.out.println(card.getString("user_name")) ;

@@ -8,15 +8,16 @@ import java.util.ArrayList;
  */
 public class Run implements Serializable{
 
-    private String dateTime, duration, country, state, city, runnerImage;
-    private float distance;
+    private String runId, dateTime, duration, country, state, city, runnerImage, user_id;
+    private double distance;
     private int paceH, paceM, paceS, likes;
     private ArrayList<Comment> commentsList;
 
-    public Run(String dateTime, float distance, int paceH, int paceM, int paceS, String duration,
+    public Run(String runId, String dateTime, double distance, int paceH, int paceM, int paceS, String duration,
                String country, String state, String city, String runnerImage,
-               int likes, ArrayList<Comment> commentsList) {
+               int likes, ArrayList<Comment> commentsList, String user_id) {
 
+        this.runId = runId;
         this.dateTime = dateTime;
         this.distance = distance;
         this.paceH = paceH;
@@ -29,7 +30,10 @@ public class Run implements Serializable{
         this.runnerImage = runnerImage;
         this.likes = likes;
         this.commentsList = commentsList;
+        this.user_id = user_id;
     }
+
+    public String getRunId() { return runId; }
 
     public String getDateTime() {
         return dateTime;
@@ -55,7 +59,7 @@ public class Run implements Serializable{
         return runnerImage;
     }
 
-    public float getDistance() {
+    public double getDistance() {
         return distance;
     }
 
@@ -78,4 +82,6 @@ public class Run implements Serializable{
     public ArrayList<Comment> getCommentsList() {
         return commentsList;
     }
+
+    public String getUser_id() { return user_id; }
 }

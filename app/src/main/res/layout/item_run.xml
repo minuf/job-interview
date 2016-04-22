@@ -18,19 +18,21 @@
             <!--runner image layout-->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="wrap_content"
+                android:layout_height="?android:attr/actionBarSize"
                 android:layout_weight="2">
 
                 <com.example.jorge.job_interview.ui.views.RoundedImageView
                     android:id="@+id/iv_user_thumb"
-                    android:layout_width="?android:attr/actionBarSize"
-                    android:layout_height="?android:attr/actionBarSize"
-                    android:scaleType="fitXY"/>
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:scaleType="fitXY"
+                    android:layout_margin="5dp"/>
 
             </LinearLayout>
 
             <!--runner info layout (name and location)-->
             <LinearLayout
+                android:paddingLeft="10dp"
                 android:layout_width="0dp"
                 android:layout_height="match_parent"
                 android:layout_weight="6"
@@ -193,6 +195,7 @@
                 android:layout_height="?android:attr/actionBarSize"
                 android:layout_alignParentBottom="true"
                 android:layout_alignParentRight="true"
+                android:layout_marginRight="10dp"
                 />
         </RelativeLayout>
 
@@ -247,13 +250,37 @@
                 android:layout_weight="3"
                 android:orientation="horizontal"
                 android:padding="5dp">
-
-                <ImageView
+                <LinearLayout
                     android:id="@+id/btn_comment"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@mipmap/ic_comment" />
+                    android:background="@mipmap/ic_comment">
+
+                    <LinearLayout
+                        android:id="@+id/lay_btn_comment"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:background="@drawable/ripple_green">
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+
+                <LinearLayout
+                    android:id="@+id/lay_btn_like"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
+                    android:orientation="horizontal"
+                    android:clickable="true"
+                    android:gravity="center"
+                    android:background="@drawable/ripple_green">
 
                 <ImageView
                     android:id="@+id/btn_like"
@@ -261,18 +288,11 @@
                     android:layout_height="match_parent"
                     android:layout_weight="1"
                     android:background="@mipmap/ic_heart" />
+                </LinearLayout>
 
             </LinearLayout>
         </LinearLayout>
-        <!--separator-->
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="2dp"
-            android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginBottom="3dp"
-            android:background="#10000000" />
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -294,7 +314,7 @@
             <!--runner info layout (name and location)-->
             <LinearLayout
                 android:layout_width="0dp"
-                android:layout_height="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_weight="8"
                 android:gravity="center_vertical"
                 android:orientation="vertical">
@@ -320,6 +340,22 @@
 
 
         </LinearLayout>
+        <!--separator-->
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="2dp"
+            android:layout_marginTop="10dp"
+            android:layout_marginRight="10dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginBottom="3dp"
+            android:background="#10000000" />
+        <TextView
+            android:layout_margin="3dp"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textAlignment="center"
+            android:text="1 comentario más"
+            android:clickable="true"/>
 
     </LinearLayout>
 
