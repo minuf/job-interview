@@ -1,5 +1,7 @@
 package com.example.jorge.job_interview.classes;
 
+import com.google.android.gms.maps.model.LatLng;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 
@@ -12,10 +14,11 @@ public class Run implements Serializable{
     private double distance;
     private int paceH, paceM, paceS, likes;
     private ArrayList<Comment> commentsList;
+    Double lat, lon;
 
     public Run(String runId, String dateTime, double distance, int paceH, int paceM, int paceS, String duration,
                String country, String state, String city, String runnerImage,
-               int likes, ArrayList<Comment> commentsList, String user_id) {
+               int likes, ArrayList<Comment> commentsList, String user_id, Double lat, Double lon) {
 
         this.runId = runId;
         this.dateTime = dateTime;
@@ -31,6 +34,9 @@ public class Run implements Serializable{
         this.likes = likes;
         this.commentsList = commentsList;
         this.user_id = user_id;
+        this.lat = lat;
+        this.lon = lon;
+
     }
 
     public String getRunId() { return runId; }
@@ -84,4 +90,12 @@ public class Run implements Serializable{
     }
 
     public String getUser_id() { return user_id; }
+
+    public Double getLat() {
+        return lat;
+    }
+
+    public Double getLon() {
+        return lon;
+    }
 }

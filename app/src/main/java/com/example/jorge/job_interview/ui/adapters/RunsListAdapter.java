@@ -1,6 +1,11 @@
 package com.example.jorge.job_interview.ui.adapters;
 
+import android.graphics.Color;
+import android.location.Address;
+import android.location.Geocoder;
+import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,17 +17,33 @@ import com.example.jorge.job_interview.R;
 import com.example.jorge.job_interview.classes.Run;
 import com.example.jorge.job_interview.classes.Runner;
 import com.example.jorge.job_interview.ui.views.RoundedImageView;
+import com.google.android.gms.maps.CameraUpdate;
+import com.google.android.gms.maps.CameraUpdateFactory;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.CameraPosition;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
+import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
+import com.squareup.picasso.Transformation;
 
+import java.io.IOException;
 import java.util.ArrayList;
+import java.util.List;
 
 /**
  * Created by jorge on 22/04/16.
  */
-public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.DefaultViewHolder> {
+public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.DefaultViewHolder> implements OnMapReadyCallback {
     private ArrayList<Runner> runnerList;
     private ArrayList<Run> runList;
     Picasso picasso;
+    AppCompatActivity activity;
+    Geocoder geocoder;
+    LatLng location = new LatLng(39.4666667, -0.3666667);
 
 
     /**
@@ -31,9 +52,11 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
      * EXCEPTION: 'no adapter attached, skipping layout',
      * that breaks app main thread on some devices
      */
-    public RunsListAdapter(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
+    public RunsListAdapter(ArrayList<Runner> runnerList, ArrayList<Run> runList, AppCompatActivity activity) {
         this.runnerList = runnerList;
         this.runList = runList;
+        this.activity = activity;
+        geocoder = new Geocoder(activity);
     }
 
     @Override
@@ -53,9 +76,24 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
         return runList.size();
     }
 
+    @Override
+    public void onMapReady(GoogleMap map) {
+
+        //map.addMarker(new MarkerOptions().position(location).title("Marker in Sydney"));
+        CameraPosition camPos = new CameraPosition.Builder()
+                .target(location)
+                .zoom(15)
+                //.bearing(0)      //Establecemos la orientación con el norte arriba
+                        //.tilt(70)
+                .build();
+
+        CameraUpdate camUpd = CameraUpdateFactory.newCameraPosition(camPos);
+        map.moveCamera(camUpd);
+    }
+
     public class DefaultViewHolder extends RecyclerView.ViewHolder {
 
-        RoundedImageView ivRunnerImage;
+        ImageView ivRunnerImage;
         ImageView ivRunThumb, ivCommentThumb, btnComment, btnLike;
         TextView tvRunnerName, tvRunLocation, tvRunDate, tvRunTime, tvRunDistance, tvRunPace, tvRunDuration, tvRunLikes, tvCommentRunnerName, tvCommentRunnerComment;
         String date, time, pace;
@@ -63,7 +101,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
-            ivRunnerImage = (RoundedImageView) itemView.findViewById(R.id.iv_user_thumb);
+            ivRunnerImage = (ImageView) itemView.findViewById(R.id.iv_user_thumb);
             ivCommentThumb = (ImageView) itemView.findViewById(R.id.iv_comment_runner_thumb);
             tvRunnerName = (TextView) itemView.findViewById(R.id.tv_runner_name);
             tvRunLocation = (TextView) itemView.findViewById(R.id.tv_run_location);
@@ -101,23 +139,52 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
                         .into(ivRunThumb);
             }
 
+            Transformation transformation = new RoundedTransformationBuilder()
+                    .borderColor(Color.WHITE)
+                    .borderWidthDp(3)
+                    .cornerRadiusDp(30)
+                    .oval(false)
+                    .build();
+
             picasso.with(ivRunnerImage.getContext())
                     .load(runner.getImgUrl())
+                    .fit()
+                    .transform(transformation)
                     //.resize(android.R.attr.actionBarSize, android.R.attr.actionBarSize)
                     //.centerCrop()
                     .into(ivRunnerImage);
 
             if (run.getCommentsList() != null && !run.getCommentsList().isEmpty()) {
                 commentsLay.setVisibility(View.VISIBLE);
+
                 picasso.with(ivCommentThumb.getContext())
                         .load(run.getCommentsList().get(0).getImgUrl())
+                        .fit()
+                        .transform(transformation)
                         .into(ivCommentThumb);
                 tvCommentRunnerName.setText(run.getCommentsList().get(0).getRunnerName());
                 tvCommentRunnerComment.setText(run.getCommentsList().get(0).getComment());
             }
             else { commentsLay.setVisibility(View.GONE); }
 
+//            SupportMapFragment mapFragment = (SupportMapFragment) activity.getSupportFragmentManager()
+  //                  .findFragmentById(R.id.map_layout);
+            GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
+
+            SupportMapFragment mMapFragment = SupportMapFragment.newInstance(options);
+            mMapFragment.getMapAsync(RunsListAdapter.this);
+
+            mMapFragment.getMapAsync(RunsListAdapter.this);
+            activity.getSupportFragmentManager()
+                    .beginTransaction()
+                    .add(R.id.map_layout, mMapFragment, "Test Map Fragment")
+                    .commit();
+            mMapFragment.setRetainInstance(true);
+            Log.e("FRAGMENT ADDED", "mMapFragment");
+
+
         }
+
     }
 
     /**

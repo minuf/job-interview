@@ -5,6 +5,8 @@ import android.content.Intent;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.Uri;
 import android.util.Log;
 
@@ -18,16 +20,19 @@ import com.example.jorge.job_interview.classes.MySingletonVolley;
 import com.example.jorge.job_interview.classes.Run;
 import com.example.jorge.job_interview.classes.Runner;
 import com.example.jorge.job_interview.helpers.MSQLiteHelper;
+import com.google.android.gms.maps.model.LatLng;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 /**
@@ -54,6 +59,8 @@ public class ConnectionService extends IntentService{
 
     private String timelineUrl = "http://wispy-wave-1292.getsandbox.com/timeline";
     private String anyNewRunUrl = "http://wispy-wave-1292.getsandbox.com/timeline/anyNewRun";
+    private Geocoder geocoder;
+    private LatLng location, location2;
 
     public ConnectionService() {
         super("ConnectionService");
@@ -75,6 +82,8 @@ public class ConnectionService extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
+
+            geocoder = new Geocoder(getApplicationContext());
             //generateRequest();
 
             final String action = intent.getAction();
@@ -143,6 +152,21 @@ public class ConnectionService extends IntentService{
                                     lastComment.getString("comment")
                             ));
                         }
+
+                        List<Address> lList = null;
+                        try {
+                            lList = geocoder.getFromLocationName(card.getString("city")+" "+card.getString("country")+", "+card.getString("state"), 1);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                        Double lat = null, lon = null;
+                        if (lList != null) {
+                            location = new LatLng(lList.get(0).getLatitude(), lList.get(0).getLongitude());
+                            lat = location.latitude;
+                            lon = location.longitude;
+                        } else {
+                            location = null;
+                        }
                         runList.add(new Run(
                                 card.getString("run_id"),
                                 dateTime.getString("date"),
@@ -157,7 +181,9 @@ public class ConnectionService extends IntentService{
                                 runnatorUser.getString("photo_thumb"),
                                 likes.getInt("count"),
                                 commentList,
-                                card.getString("user_id")
+                                card.getString("user_id"),
+                                lat,
+                                lon
                         ));
 
                         //System.out.println(card.getString("user_name")) ;
@@ -171,7 +197,6 @@ public class ConnectionService extends IntentService{
 
                 }
             }
-
     }
 
     public boolean readFromDb() {
@@ -234,7 +259,21 @@ public class ConnectionService extends IntentService{
                         gCommentList.add(new Comment(comment_id, usr_id, rn_id, usr_photo, usr_name, com_text));
                     }while (cc.moveToNext());
                 }
-                gRunList.add(new Run(run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds, duration, country, state, city, runnerImg, likes, gCommentList, user_id));
+                List<Address> lList = null;
+                try {
+                    lList = geocoder.getFromLocationName(city+" "+country+", "+state, 1);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                Double lat = null, lon = null;
+                if (lList != null) {
+                    location = new LatLng(lList.get(0).getLatitude(), lList.get(0).getLongitude());
+                    lat = location.latitude;
+                    lon = location.longitude;
+                } else {
+                    location = null;
+                }
+                gRunList.add(new Run(run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds, duration, country, state, city, runnerImg, likes, gCommentList, user_id, lat, lon));
                 System.out.println("com count: " + gCommentList.size());
                 //gCommentList.clear(); // reset commentList for next run
 

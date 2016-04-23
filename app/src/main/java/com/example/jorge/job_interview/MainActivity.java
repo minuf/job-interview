@@ -85,7 +85,7 @@ public class MainActivity extends AppCompatActivity{
                     runnerList.add(0, lRunnerList.get(i));
                 }
                 if (runsAdapter == null) {
-                    runsAdapter = new RunsListAdapter(runnerList, runList);
+                    runsAdapter = new RunsListAdapter(runnerList, runList, MainActivity.this);
                 }else {
                     runsAdapter.notifyDataSetChanged();
                 }
@@ -97,7 +97,7 @@ public class MainActivity extends AppCompatActivity{
                 runList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
 
                 if (runnerList != null && runList != null) {
-                    runsAdapter = new RunsListAdapter(runnerList, runList);
+                    runsAdapter = new RunsListAdapter(runnerList, runList, MainActivity.this);
                     rvRunCards.setAdapter(runsAdapter);
 
                     //System.out.println("NOMBRE::::::" + runList.get(0).getCommentsList().get(0).getRunnerName());
