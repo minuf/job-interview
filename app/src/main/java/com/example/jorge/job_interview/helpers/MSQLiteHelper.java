@@ -10,21 +10,19 @@ import android.database.sqlite.SQLiteOpenHelper;
 public class MSQLiteHelper extends SQLiteOpenHelper {
 
     //Sentencia SQL para crear la tabla de runners
-    String sqlCreateRunners = "CREATE TABLE IF NOT EXISTS runners (user_id VARCHAR(45) NOT NULL, "+
-            "user_name VARCHAR(45) NOT NULL, user_photo VARCHAR(255), PRIMARY KEY (user_id))"+
-            "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+    String sqlCreateRunners = "CREATE TABLE IF NOT EXISTS runners (user_id TEXT NOT NULL, "+
+            "user_name TEXT NOT NULL, user_photo TEXT, PRIMARY KEY (user_id)) ";
 
-    String sqlCreateRuns = "CREATE TABLE IF NOT EXISTS runs (run_id VARCHAR(45) NOT NULL, dateTime VARCHAR(45) NOT NULL, "+
-            "distance DOUBLE, pace_hour INTEGER, pace_minute INTEGER, pace_seconds INTEGER,"+
-            "duration VARCHAR(45), country VARCHAR(45), state VARCHAR(45), city VARCHAR(45)"+
-            "runner_photo_thumb VARCHAR(255), likes INTEGER, user_id VARCHAR(45)"+
-            "PRIMARY KEY (run_id), FOREIGN KEY (user_id) REFERENCES runners(user_id))"+
-            "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+    String sqlCreateRuns = "CREATE TABLE IF NOT EXISTS runs (run_id TEXT NOT NULL, dateTime TEXT NOT NULL, "+
+            "distance DOUBLE, pace_hour INTEGER, pace_minute INTEGER, pace_seconds INTEGER, "+
+            "duration TEXT, country TEXT, state TEXT, city TEXT, "+
+            "runner_photo_thumb TEXT, likes INTEGER, user_id TEXT, "+
+            "PRIMARY KEY (run_id), FOREIGN KEY (user_id) REFERENCES runners(user_id))";
 
-    String sqlCreateComments = "CREATE TABLE IF NOT EXISTS comments (comment_id VARCHAR(45) NOT NULL, user_id VARCHAR(45)"+
-            "run_id VARCHAR(45) NOT NULL, user_photo VARCHAR(255), user_name VARCHAR(45), comment_text VARCHAR(45),"+
-            " PRIMARY KEY (user_id), FOREIGN KEY (user_id) REFERENCES runners(user_id))"+
-            "DEFAULT CHARACTER SET utf8 COLLATE utf8_general_ci;";
+    String sqlCreateComments = "CREATE TABLE IF NOT EXISTS comments (comment_id TEXT NOT NULL, user_id TEXT, "+
+            "run_id TEXT NOT NULL, user_photo TEXT, user_name TEXT, comment_text TEXT,"+
+            " PRIMARY KEY (comment_id), FOREIGN KEY (run_id) REFERENCES runs(run_id)) ";
+    String sqlCreate = "CREATE TABLE Usuario (codigo INTEGER, nombre TEXT)";
 
     public MSQLiteHelper(Context contexto, String nombre,
                                 SQLiteDatabase.CursorFactory factory, int version) {
@@ -46,6 +44,12 @@ public class MSQLiteHelper extends SQLiteOpenHelper {
         //      Sin embargo lo normal será que haya que migrar datos de la tabla antigua
         //      a la nueva, por lo que este método debería ser más elaborado.
 
+        //Se elimina la versión anterior de la tabla
+        db.execSQL("DROP TABLE IF EXISTS Usuarios");
 
+        //Se crea la nueva versión de la tabla
+        onCreate(db);
     }
 }
+
+//http://developer.android.com/intl/es/training/basics/data-storage/databases.html

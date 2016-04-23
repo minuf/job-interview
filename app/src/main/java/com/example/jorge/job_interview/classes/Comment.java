@@ -6,7 +6,7 @@ package com.example.jorge.job_interview.classes;
 public class Comment extends Runner {
     private String comId, userId, runId, comment;
     public Comment(String comId, String userId, String runId, String imgUrl, String runnerName, String comment) {
-        super(imgUrl, runnerName);
+        super(userId, imgUrl, runnerName);
         this.comId = comId;
         this.userId = userId;
         this.runId = runId;
@@ -23,6 +23,17 @@ public class Comment extends Runner {
 
     public String getUserId() {
         return userId;
+    }
+
+    @Override
+    public String getImgUrl() {
+        return super.getImgUrl();
+    }
+
+
+    @Override
+    public String getRunnerName() {
+        return super.getRunnerName();
     }
 
     public String getRunId() {

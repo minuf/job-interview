@@ -4,22 +4,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
-import android.widget.Toast;
 
-import com.android.volley.Request;
-import com.android.volley.Response;
-import com.android.volley.VolleyError;
-import com.android.volley.toolbox.StringRequest;
-import com.android.volley.toolbox.Volley;
-import com.example.jorge.job_interview.classes.MySingletonVolley;
 import com.example.jorge.job_interview.classes.Run;
 import com.example.jorge.job_interview.classes.Runner;
-import com.example.jorge.job_interview.interfaces.OnTaskCompletedGeneric;
 import com.example.jorge.job_interview.services.ConnectionService;
 import com.example.jorge.job_interview.ui.adapters.DefaultEmptyAdapter;
 import com.example.jorge.job_interview.ui.adapters.RunsListAdapter;
@@ -29,11 +22,27 @@ import java.util.ArrayList;
 public class MainActivity extends AppCompatActivity{
     ProgressReceiver rcv;
     RecyclerView rvRunCards;
+    RunsListAdapter runsAdapter;
+    ArrayList<Runner> runnerList;
+    ArrayList<Run> runList;
+    SwipeRefreshLayout mSwipeRefreshLayout;
     private String[] myDataset = new String[]{"AQUÍ APARECERÁN LOS RUNS TUYOS Y DE TUS AMIGOS"};
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        runnerList = new ArrayList<>();
+        runList = new ArrayList<>();
+
+        mSwipeRefreshLayout = (SwipeRefreshLayout) findViewById(R.id.swipeRefresh);
+        mSwipeRefreshLayout.setColorSchemeColors(getResources().getColor(R.color.colorPrimaryDark), getResources().getColor(R.color.colorAccent));
+        mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
+            @Override
+            public void onRefresh() {
+                ConnectionService.startActionGetRuns(MainActivity.this);
+            }
+        });
 
         rvRunCards = (RecyclerView)findViewById(R.id.runList);
         rvRunCards.setHasFixedSize(true);
@@ -42,7 +51,7 @@ public class MainActivity extends AppCompatActivity{
         rvRunCards.setItemAnimator(new DefaultItemAnimator());
 /*
         Intent msgIntent = new Intent(MainActivity.this, ConnectionService.class);
-        msgIntent.setAction(ConnectionService.ACTION_END);
+        msgIntent.setAction(ConnectionService.ACTION_START);
         startService(msgIntent);
 */
         //call service to start from himself, this is an IntentService that's stop automatic from himself too.
@@ -51,7 +60,7 @@ public class MainActivity extends AppCompatActivity{
         IntentFilter filter = new IntentFilter();
         filter.addAction(ConnectionService.ACTION_GET_RUNS);
         filter.addAction(ConnectionService.ACTION_ANY_NEW);
-        filter.addAction(ConnectionService.ACTION_END);
+        filter.addAction(ConnectionService.ACTION_START);
         rcv = new ProgressReceiver();
         registerReceiver(rcv, filter);
     }
@@ -66,15 +75,32 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onReceive(Context context, Intent intent) {
+            if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
             if(intent.getAction().equals(ConnectionService.ACTION_ANY_NEW)) {
+                ArrayList<Runner> lRunnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
+                ArrayList<Run> lRunList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
+
+                for (int i=0; i<lRunList.size(); i++) {
+                    runList.add(0, lRunList.get(i));
+                    runnerList.add(0, lRunnerList.get(i));
+                }
+                if (runsAdapter == null) {
+                    runsAdapter = new RunsListAdapter(runnerList, runList);
+                }else {
+                    runsAdapter.notifyDataSetChanged();
+                }
+                rvRunCards.setAdapter(runsAdapter);
+                //runsAdapter.notifyDataSetChanged();
             }
-            else if(intent.getAction().equals(ConnectionService.ACTION_END)) {
-                ArrayList<Runner> runnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
-                ArrayList<Run> runList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
+            else if(intent.getAction().equals(ConnectionService.ACTION_GET_RUNS)) {
+                runnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
+                runList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
 
                 if (runnerList != null && runList != null) {
-                    RunsListAdapter runsAdapter = new RunsListAdapter(runnerList, runList);
+                    runsAdapter = new RunsListAdapter(runnerList, runList);
                     rvRunCards.setAdapter(runsAdapter);
+
+                    //System.out.println("NOMBRE::::::" + runList.get(0).getCommentsList().get(0).getRunnerName());
                 }
 
             }

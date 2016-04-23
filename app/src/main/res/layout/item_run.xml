@@ -183,12 +183,12 @@
             android:layout_height="200dp"
             android:layout_marginTop="10dp"
             android:background="#30330040">
-            <LinearLayout
+            <FrameLayout
                 android:id="@+id/map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:orientation="vertical">
-            </LinearLayout>
+            </FrameLayout>
             <ImageView
                 android:id="@+id/iv_run_thumb"
                 android:layout_width="?android:attr/actionBarSize"
@@ -271,30 +271,36 @@
 
                 </LinearLayout>
 
-
                 <LinearLayout
-                    android:id="@+id/lay_btn_like"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"
-                    android:layout_weight="1"
-                    android:orientation="horizontal"
-                    android:clickable="true"
-                    android:gravity="center"
-                    android:background="@drawable/ripple_green">
-
-                <ImageView
                     android:id="@+id/btn_like"
                     android:layout_width="0dp"
                     android:layout_height="match_parent"
                     android:layout_weight="1"
-                    android:background="@mipmap/ic_heart" />
+                    android:background="@mipmap/ic_heart">
+
+                    <LinearLayout
+                        android:id="@+id/lay_btn_like"
+                        android:layout_width="0dp"
+                        android:layout_height="match_parent"
+                        android:layout_weight="1"
+                        android:orientation="horizontal"
+                        android:clickable="true"
+                        android:gravity="center"
+                        android:background="@drawable/ripple_green">
+
+                    </LinearLayout>
+
                 </LinearLayout>
+
+
+
 
             </LinearLayout>
         </LinearLayout>
 
 
         <LinearLayout
+            android:id="@+id/comments_layout"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:orientation="horizontal">

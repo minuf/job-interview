@@ -5,6 +5,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jorge.job_interview.R;
@@ -58,6 +59,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
         ImageView ivRunThumb, ivCommentThumb, btnComment, btnLike;
         TextView tvRunnerName, tvRunLocation, tvRunDate, tvRunTime, tvRunDistance, tvRunPace, tvRunDuration, tvRunLikes, tvCommentRunnerName, tvCommentRunnerComment;
         String date, time, pace;
+        LinearLayout commentsLay;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
@@ -73,6 +75,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
             tvRunLikes = (TextView) itemView.findViewById(R.id.tv_run_likes);
             tvCommentRunnerName = (TextView) itemView.findViewById(R.id.tv_comment_runner_name);
             tvCommentRunnerComment = (TextView) itemView.findViewById(R.id.tv_comment_runner_comment);
+            commentsLay = (LinearLayout) itemView.findViewById(R.id.comments_layout);
         }
         public void bindItem(Runner runner, Run run){
             date = run.getDateTime().substring(0, run.getDateTime().indexOf(" "));
@@ -90,16 +93,6 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
             tvRunDuration.setText(run.getDuration());
             tvRunLikes.setText(run.getLikes() + "");
 
-            picasso.with(ivRunnerImage.getContext())
-                    .load(runner.getImgUrl())
-                    //.resize(android.R.attr.actionBarSize, android.R.attr.actionBarSize)
-                    //.centerCrop()
-                    .into(ivRunnerImage);
-            picasso.with(ivCommentThumb.getContext())
-                    .load(run.getCommentsList().get(0).getImgUrl())
-                    .into(ivCommentThumb);
-            tvCommentRunnerName.setText(run.getCommentsList().get(0).getRunnerName());
-            tvCommentRunnerComment.setText(run.getCommentsList().get(0).getComment());
             if (run.getRunnerImage() != null && !run.getRunnerImage().isEmpty() && run.getRunnerImage() != "") {
                 //set image for run if exist
                 ivRunThumb = (ImageView)itemView.findViewById(R.id.iv_run_thumb);
@@ -107,6 +100,23 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
                         .load(run.getRunnerImage())
                         .into(ivRunThumb);
             }
+
+            picasso.with(ivRunnerImage.getContext())
+                    .load(runner.getImgUrl())
+                    //.resize(android.R.attr.actionBarSize, android.R.attr.actionBarSize)
+                    //.centerCrop()
+                    .into(ivRunnerImage);
+
+            if (run.getCommentsList() != null && !run.getCommentsList().isEmpty()) {
+                commentsLay.setVisibility(View.VISIBLE);
+                picasso.with(ivCommentThumb.getContext())
+                        .load(run.getCommentsList().get(0).getImgUrl())
+                        .into(ivCommentThumb);
+                tvCommentRunnerName.setText(run.getCommentsList().get(0).getRunnerName());
+                tvCommentRunnerComment.setText(run.getCommentsList().get(0).getComment());
+            }
+            else { commentsLay.setVisibility(View.GONE); }
+
         }
     }
 

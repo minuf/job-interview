@@ -6,11 +6,16 @@ import java.io.Serializable;
  * Created by jorge on 20/04/16.
  */
 public class Runner implements Serializable{
-    private String imgUrl, runnerName;
+    private String imgUrl, runnerName, userId;
 
-    public Runner(String imgUrl, String runnerName) {
+    public Runner(String userId, String imgUrl, String runnerName) {
+        this.userId = userId;
         this.imgUrl = imgUrl;
         this.runnerName = runnerName;
+    }
+
+    public String getUserId() {
+        return userId;
     }
 
     public String getImgUrl() {
