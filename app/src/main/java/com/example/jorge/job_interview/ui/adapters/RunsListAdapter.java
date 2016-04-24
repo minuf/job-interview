@@ -22,6 +22,7 @@ import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.GoogleMapOptions;
+import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.CameraPosition;
@@ -38,7 +39,7 @@ import java.util.List;
 /**
  * Created by jorge on 22/04/16.
  */
-public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.DefaultViewHolder> implements OnMapReadyCallback {
+public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.DefaultViewHolder> {
     private ArrayList<Runner> runnerList;
     private ArrayList<Run> runList;
     Picasso picasso;
@@ -77,24 +78,9 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
         return runList.size();
     }
 
-    @Override
-    public void onMapReady(GoogleMap map) {
 
-        //map.addMarker(new MarkerOptions().position(location).title("Marker in Sydney"));
-        /*
-        CameraPosition camPos = new CameraPosition.Builder()
-                .target(location)
-                .zoom(15)
-                //.bearing(0)      //Establecemos la orientación con el norte arriba
-                        //.tilt(70)
-                .build();
 
-        CameraUpdate camUpd = CameraUpdateFactory.newCameraPosition(camPos);
-        map.moveCamera(camUpd);
-        */
-    }
-
-    public class DefaultViewHolder extends RecyclerView.ViewHolder {
+    public class DefaultViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
 
         ImageView ivRunnerImage;
         ImageView ivRunThumb, ivCommentThumb, btnComment, btnLike;
@@ -102,6 +88,30 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
         String date, time, pace;
         LinearLayout commentsLay;
         FrameLayout mapLay;
+        public MapView mapView;
+
+        @Override
+        public void onMapReady(GoogleMap map) {
+            CameraPosition camPos = new CameraPosition.Builder()
+                    .target(location)
+                    .zoom(15)
+                    .build();
+            GoogleMapOptions options = new GoogleMapOptions()
+                    .liteMode(true)
+                    .camera(camPos)
+                    .compassEnabled(true)
+                    .zOrderOnTop(true)
+                    .tiltGesturesEnabled(false)
+                    .ambientEnabled(false)
+                    .rotateGesturesEnabled(false)
+                    .scrollGesturesEnabled(false)
+                    ;
+
+            CameraUpdate camUpd = CameraUpdateFactory.newCameraPosition(camPos);
+            map.moveCamera(camUpd);
+
+        }
+
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
@@ -118,7 +128,9 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
             tvCommentRunnerName = (TextView) itemView.findViewById(R.id.tv_comment_runner_name);
             tvCommentRunnerComment = (TextView) itemView.findViewById(R.id.tv_comment_runner_comment);
             commentsLay = (LinearLayout) itemView.findViewById(R.id.comments_layout);
-            mapLay = (FrameLayout) itemView.findViewById(R.id.map_layout);
+            mapView = (MapView) itemView.findViewById(R.id.map_layout);
+            mapView.onCreate(null);
+            mapView.getMapAsync(this);
         }
         public void bindItem(Runner runner, Run run){
             date = run.getDateTime().substring(0, run.getDateTime().indexOf(" "));
@@ -172,42 +184,12 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
             }
             else { commentsLay.setVisibility(View.GONE); }
 
-//            SupportMapFragment mapFragment = (SupportMapFragment) activity.getSupportFragmentManager()
-  //                  .findFragmentById(R.id.map_layout);
             Double lat = run.getLat();
             Double lon = run.getLon();
+
             if (lat != null && lon != null) {
                 location = new LatLng(lat, lon);
             }
-            CameraPosition camPos = new CameraPosition.Builder()
-                    .target(location)
-                    .zoom(15)
-                            //.bearing(0)      //Establecemos la orientación con el norte arriba
-                            //.tilt(70)
-                    .build();
-            GoogleMapOptions options = new GoogleMapOptions()
-                    .liteMode(true)
-                    .camera(camPos)
-                    .compassEnabled(true)
-                    .zOrderOnTop(true)
-                    .tiltGesturesEnabled(false)
-                    .ambientEnabled(false)
-                    .rotateGesturesEnabled(false)
-                    .scrollGesturesEnabled(false)
-
-                    ;
-
-            SupportMapFragment mMapFragment = SupportMapFragment.newInstance(options);
-            mMapFragment.getMapAsync(RunsListAdapter.this);
-            activity.getSupportFragmentManager()
-                    .beginTransaction()
-                    .add(R.id.map_layout, mMapFragment, "Test Map Fragment")
-                    .commit();
-            mMapFragment.setRetainInstance(true);
-            Log.e("FRAGMENT ADDED", "mMapFragment");
-            mapLay.setVisibility(View.VISIBLE);
-
-
 
         }
 
