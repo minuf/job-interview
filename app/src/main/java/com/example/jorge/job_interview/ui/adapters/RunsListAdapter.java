@@ -9,6 +9,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -43,7 +44,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
     Picasso picasso;
     AppCompatActivity activity;
     Geocoder geocoder;
-    LatLng location = new LatLng(39.4666667, -0.3666667);
+    LatLng defLocation = new LatLng(39.4666667, -0.3666667), location;
 
 
     /**
@@ -80,6 +81,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
     public void onMapReady(GoogleMap map) {
 
         //map.addMarker(new MarkerOptions().position(location).title("Marker in Sydney"));
+        /*
         CameraPosition camPos = new CameraPosition.Builder()
                 .target(location)
                 .zoom(15)
@@ -89,6 +91,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
 
         CameraUpdate camUpd = CameraUpdateFactory.newCameraPosition(camPos);
         map.moveCamera(camUpd);
+        */
     }
 
     public class DefaultViewHolder extends RecyclerView.ViewHolder {
@@ -98,6 +101,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
         TextView tvRunnerName, tvRunLocation, tvRunDate, tvRunTime, tvRunDistance, tvRunPace, tvRunDuration, tvRunLikes, tvCommentRunnerName, tvCommentRunnerComment;
         String date, time, pace;
         LinearLayout commentsLay;
+        FrameLayout mapLay;
 
         public DefaultViewHolder(View itemView) {
             super(itemView);
@@ -114,6 +118,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
             tvCommentRunnerName = (TextView) itemView.findViewById(R.id.tv_comment_runner_name);
             tvCommentRunnerComment = (TextView) itemView.findViewById(R.id.tv_comment_runner_comment);
             commentsLay = (LinearLayout) itemView.findViewById(R.id.comments_layout);
+            mapLay = (FrameLayout) itemView.findViewById(R.id.map_layout);
         }
         public void bindItem(Runner runner, Run run){
             date = run.getDateTime().substring(0, run.getDateTime().indexOf(" "));
@@ -169,11 +174,30 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
 
 //            SupportMapFragment mapFragment = (SupportMapFragment) activity.getSupportFragmentManager()
   //                  .findFragmentById(R.id.map_layout);
-            GoogleMapOptions options = new GoogleMapOptions().liteMode(true);
+            Double lat = run.getLat();
+            Double lon = run.getLon();
+            if (lat != null && lon != null) {
+                location = new LatLng(lat, lon);
+            }
+            CameraPosition camPos = new CameraPosition.Builder()
+                    .target(location)
+                    .zoom(15)
+                            //.bearing(0)      //Establecemos la orientación con el norte arriba
+                            //.tilt(70)
+                    .build();
+            GoogleMapOptions options = new GoogleMapOptions()
+                    .liteMode(true)
+                    .camera(camPos)
+                    .compassEnabled(true)
+                    .zOrderOnTop(true)
+                    .tiltGesturesEnabled(false)
+                    .ambientEnabled(false)
+                    .rotateGesturesEnabled(false)
+                    .scrollGesturesEnabled(false)
+
+                    ;
 
             SupportMapFragment mMapFragment = SupportMapFragment.newInstance(options);
-            mMapFragment.getMapAsync(RunsListAdapter.this);
-
             mMapFragment.getMapAsync(RunsListAdapter.this);
             activity.getSupportFragmentManager()
                     .beginTransaction()
@@ -181,6 +205,8 @@ public class RunsListAdapter extends RecyclerView.Adapter<RunsListAdapter.Defaul
                     .commit();
             mMapFragment.setRetainInstance(true);
             Log.e("FRAGMENT ADDED", "mMapFragment");
+            mapLay.setVisibility(View.VISIBLE);
+
 
 
         }

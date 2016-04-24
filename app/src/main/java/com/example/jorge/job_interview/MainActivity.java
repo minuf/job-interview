@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.support.design.widget.Snackbar;
 import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -75,10 +76,16 @@ public class MainActivity extends AppCompatActivity{
 
         @Override
         public void onReceive(Context context, Intent intent) {
-            if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
             if(intent.getAction().equals(ConnectionService.ACTION_ANY_NEW)) {
                 ArrayList<Runner> lRunnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
                 ArrayList<Run> lRunList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
+
+                if (lRunList == null || lRunnerList == null && mSwipeRefreshLayout.isRefreshing()) {
+                    mSwipeRefreshLayout.setRefreshing(false);
+                    Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
+                    return;
+                }
+                if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
 
                 for (int i=0; i<lRunList.size(); i++) {
                     runList.add(0, lRunList.get(i));

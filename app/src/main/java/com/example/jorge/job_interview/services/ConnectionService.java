@@ -360,6 +360,8 @@ public class ConnectionService extends IntentService{
                     public void onErrorResponse(VolleyError error) {
                         // TODO Auto-generated method stub
                         Log.d("ERROR","error => "+error.toString());
+                        ACTION = ACTION_ANY_NEW;
+                        sendResponse(null, null);
                     }
                 }
         ) {

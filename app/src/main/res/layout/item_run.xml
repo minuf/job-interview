@@ -184,6 +184,7 @@
             android:layout_marginTop="10dp"
             android:background="#30330040">
             <FrameLayout
+                android:visibility="invisible"
                 android:id="@+id/map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
