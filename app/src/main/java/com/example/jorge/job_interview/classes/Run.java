@@ -18,7 +18,7 @@ public class Run implements Serializable{
 
     public Run(String runId, String dateTime, double distance, int paceH, int paceM, int paceS, String duration,
                String country, String state, String city, String runnerImage,
-               int likes, ArrayList<Comment> commentsList, String user_id, Double lat, Double lon) {
+               int likes, ArrayList<Comment> commentsList, String user_id) {
 
         this.runId = runId;
         this.dateTime = dateTime;
@@ -34,9 +34,6 @@ public class Run implements Serializable{
         this.likes = likes;
         this.commentsList = commentsList;
         this.user_id = user_id;
-        this.lat = lat;
-        this.lon = lon;
-
     }
 
     public String getRunId() { return runId; }
@@ -97,5 +94,13 @@ public class Run implements Serializable{
 
     public Double getLon() {
         return lon;
+    }
+
+    public void setLat(Double lat) {
+        this.lat = lat;
+    }
+
+    public void setLon(Double lon) {
+        this.lon = lon;
     }
 }

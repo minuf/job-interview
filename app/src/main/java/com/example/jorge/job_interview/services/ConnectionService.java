@@ -51,7 +51,7 @@ public class ConnectionService extends IntentService{
     public static final String ACTION_START =
             "com.example.jorge.intent.action.END";
 
-    private static boolean readed = false;
+    private boolean readed = false;
 
     private ArrayList<Runner> gRunnerList;
     private ArrayList<Run> gRunList;
@@ -82,7 +82,6 @@ public class ConnectionService extends IntentService{
     @Override
     protected void onHandleIntent(Intent intent) {
         if (intent != null) {
-
             geocoder = new Geocoder(getApplicationContext());
             //generateRequest();
 
@@ -167,7 +166,7 @@ public class ConnectionService extends IntentService{
                         } else {
                             location = null;
                         }
-                        runList.add(new Run(
+                        Run nRun = new Run(
                                 card.getString("run_id"),
                                 dateTime.getString("date"),
                                 card.getDouble("distance"),
@@ -181,10 +180,10 @@ public class ConnectionService extends IntentService{
                                 runnatorUser.getString("photo_thumb"),
                                 likes.getInt("count"),
                                 commentList,
-                                card.getString("user_id"),
-                                lat,
-                                lon
-                        ));
+                                card.getString("user_id"));
+                        nRun.setLat(lat);
+                        nRun.setLon(lon);
+                        runList.add(nRun);
 
                         //System.out.println(card.getString("user_name")) ;
                     }/*
@@ -273,12 +272,17 @@ public class ConnectionService extends IntentService{
                 } else {
                     location = null;
                 }
-                gRunList.add(new Run(run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds, duration, country, state, city, runnerImg, likes, gCommentList, user_id, lat, lon));
+                Run nRun = new Run(run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds, duration, country, state, city, runnerImg, likes, gCommentList, user_id);
+                nRun.setLat(lat);
+                nRun.setLon(lon);
+                gRunList.add(nRun);
                 System.out.println("com count: " + gCommentList.size());
+                nRun = null;
                 //gCommentList.clear(); // reset commentList for next run
 
 
             } while(c.moveToNext());
+            System.out.println("runs count: " + gRunList.size());
         }
         db.close();
         if (gRunnerList != null && !gRunnerList.isEmpty() && gRunList != null && !gRunList.isEmpty()) return true;

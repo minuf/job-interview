@@ -25,7 +25,7 @@
                     android:id="@+id/iv_user_thumb"
                     android:layout_width="match_parent"
                     android:layout_height="match_parent"
-                    android:scaleType="fitXY"
+                    android:scaleType="centerCrop"
                     android:layout_margin="5dp"/>
 
             </LinearLayout>
@@ -189,7 +189,8 @@
                 android:id="@+id/map_layout"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
-                map:liteMode="true" />
+                map:liteMode="true"
+                android:clickable="false"/>
             <ImageView
                 android:id="@+id/iv_run_thumb"
                 android:layout_width="?android:attr/actionBarSize"
@@ -314,7 +315,8 @@
                 <ImageView
                     android:id="@+id/iv_comment_runner_thumb"
                     android:layout_width="?android:attr/actionBarSize"
-                    android:layout_height="?android:attr/actionBarSize" />
+                    android:layout_height="?android:attr/actionBarSize"
+                    android:scaleType="centerCrop"/>
 
             </LinearLayout>
 
