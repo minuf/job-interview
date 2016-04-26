@@ -12,8 +12,8 @@ import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 
-import com.example.jorge.job_interview.classes.Run;
-import com.example.jorge.job_interview.classes.Runner;
+import com.example.jorge.job_interview.classes.models.vo.Run;
+import com.example.jorge.job_interview.classes.models.vo.Runner;
 import com.example.jorge.job_interview.services.ConnectionService;
 import com.example.jorge.job_interview.ui.adapters.DefaultEmptyAdapter;
 import com.example.jorge.job_interview.ui.adapters.RunsListAdapter;

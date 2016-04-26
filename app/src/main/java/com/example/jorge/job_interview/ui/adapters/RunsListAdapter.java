@@ -7,8 +7,8 @@ import android.view.View;
 import android.view.ViewGroup;
 
 import com.example.jorge.job_interview.R;
-import com.example.jorge.job_interview.classes.Run;
-import com.example.jorge.job_interview.classes.Runner;
+import com.example.jorge.job_interview.classes.models.vo.Run;
+import com.example.jorge.job_interview.classes.models.vo.Runner;
 
 import java.util.ArrayList;
 

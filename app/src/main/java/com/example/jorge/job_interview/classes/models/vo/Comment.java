@@ -1,4 +1,6 @@
-package com.example.jorge.job_interview.classes;
+package com.example.jorge.job_interview.classes.models.vo;
+
+import com.example.jorge.job_interview.classes.models.vo.Runner;
 
 /**
  * Created by jorge on 22/04/16.

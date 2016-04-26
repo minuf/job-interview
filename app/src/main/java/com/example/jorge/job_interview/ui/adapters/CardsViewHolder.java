@@ -9,12 +9,11 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.example.jorge.job_interview.R;
-import com.example.jorge.job_interview.classes.Run;
-import com.example.jorge.job_interview.classes.Runner;
+import com.example.jorge.job_interview.classes.models.vo.Run;
+import com.example.jorge.job_interview.classes.models.vo.Runner;
 import com.google.android.gms.maps.CameraUpdate;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
-import com.google.android.gms.maps.GoogleMapOptions;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;

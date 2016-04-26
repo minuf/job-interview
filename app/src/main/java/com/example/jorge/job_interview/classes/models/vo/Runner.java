@@ -1,4 +1,4 @@
-package com.example.jorge.job_interview.classes;
+package com.example.jorge.job_interview.classes.models.vo;
 
 import java.io.Serializable;
 

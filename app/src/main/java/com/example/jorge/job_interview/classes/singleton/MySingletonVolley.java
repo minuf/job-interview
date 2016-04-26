@@ -1,4 +1,4 @@
-package com.example.jorge.job_interview.classes;
+package com.example.jorge.job_interview.classes.singleton;
 
 import android.content.Context;
 import android.graphics.Bitmap;

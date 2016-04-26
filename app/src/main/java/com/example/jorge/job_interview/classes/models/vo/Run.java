@@ -1,6 +1,4 @@
-package com.example.jorge.job_interview.classes;
-
-import com.google.android.gms.maps.model.LatLng;
+package com.example.jorge.job_interview.classes.models.vo;
 
 import java.io.Serializable;
 import java.util.ArrayList;
