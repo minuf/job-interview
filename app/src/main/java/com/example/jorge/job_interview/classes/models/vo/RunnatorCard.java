@@ -5,7 +5,7 @@ import java.util.ArrayList;
 /**
  * Created by jorge on 26/04/16.
  */
-public class RunnatorCard {
+public class RunnatorCard implements Comparable<RunnatorCard>{
     String img_url, user_name, user_city, time, date, run_img_url;
     Double lat, lon;
     ArrayList<Comment> comments;
@@ -92,5 +92,11 @@ public class RunnatorCard {
 
     public void setComments(ArrayList<Comment> comments) {
         this.comments = comments;
+    }
+
+    //Implementation of compareTo method for easy ordering list later with sort method..
+    @Override
+    public int compareTo(RunnatorCard another) {
+        return date.compareTo(another.date);
     }
 }

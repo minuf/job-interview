@@ -11,6 +11,7 @@ import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.example.jorge.job_interview.classes.controllers.MainController;
 import com.example.jorge.job_interview.classes.models.dao.RunDao;
 import com.example.jorge.job_interview.classes.models.dao.RunnerDao;
 import com.example.jorge.job_interview.classes.models.vo.Comment;
@@ -77,6 +78,7 @@ public class ConnectionService extends IntentService{
         if (intent != null) {
             //generateRequest();
 
+            MainController mainController = new MainController(this);
             final String action = intent.getAction();
             if (ACTION_START.equals(action)) {
                 if (readFromDb()) {

@@ -28,10 +28,9 @@ public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
      * EXCEPTION: 'no adapter attached, skipping layout',
      * that breaks app main thread on some devices
      */
-    public RunsListAdapter(ArrayList<Runner> runnerList, ArrayList<Run> runList, AppCompatActivity activity) {
+    public RunsListAdapter(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
         this.runnerList = runnerList;
         this.runList = runList;
-        this.activity = activity;
     }
 
     @Override

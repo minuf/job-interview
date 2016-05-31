@@ -14,16 +14,11 @@
         android:theme="@style/AppTheme.NoActionBar.AppBarOverlay">
     </android.support.design.widget.AppBarLayout>
 
-    <android.support.v4.widget.SwipeRefreshLayout
-        android:id="@+id/swipeRefresh"
+    <FrameLayout
+        android:id="@+id/main_fragment"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content">
+        android:layout_height="match_parent">
+    </FrameLayout>
 
-    <android.support.v7.widget.RecyclerView
-        android:id="@+id/runList"
-        android:layout_width="match_parent"
-        android:layout_height="match_parent" />
-
-    </android.support.v4.widget.SwipeRefreshLayout>
 
 </android.support.design.widget.CoordinatorLayout>
