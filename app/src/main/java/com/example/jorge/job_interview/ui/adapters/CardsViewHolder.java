@@ -94,7 +94,7 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         tvRunDistance.setText(run.getDistance()+"");
         tvRunPace.setText(pace);
         tvRunDuration.setText(run.getDuration());
-        tvRunLikes.setText(run.getLikes() + "");
+        tvRunLikes.setText(run.getLikes() + " ");
 
         if (run.getRunnerImage() != null && !run.getRunnerImage().isEmpty() && run.getRunnerImage() != "") {
             //set image for run if exist

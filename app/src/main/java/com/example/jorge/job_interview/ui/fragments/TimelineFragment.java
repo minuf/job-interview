@@ -1,9 +1,5 @@
 package com.example.jorge.job_interview.ui.fragments;
 
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,14 +8,18 @@ import android.support.v4.widget.SwipeRefreshLayout;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Toast;
 
 import com.example.jorge.job_interview.R;
+import com.example.jorge.job_interview.classes.controllers.TimelineController;
 import com.example.jorge.job_interview.classes.models.vo.Run;
 import com.example.jorge.job_interview.classes.models.vo.Runner;
-import com.example.jorge.job_interview.services.ConnectionService;
+import com.example.jorge.job_interview.interfaces.OnTaskCompletedGeneric;
+import com.example.jorge.job_interview.services.ApiService;
 import com.example.jorge.job_interview.ui.adapters.DefaultEmptyAdapter;
 import com.example.jorge.job_interview.ui.adapters.RunsListAdapter;
 
@@ -28,22 +28,42 @@ import java.util.ArrayList;
 /**
  * Created by jorge on 27/04/16.
  */
-public class TimelineFragment extends Fragment {
+public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric{
 
-    ProgressReceiver rcv;
+    public static boolean isTymelineSync = false;
+
+    TimelineController timelineController;
+    Fragment loadFragment;
+    TimelineController.ProgressReceiver rcv;
     RecyclerView rvRunCards;
     RunsListAdapter runsAdapter;
     ArrayList<Runner> runnerList;
     ArrayList<Run> runList;
     SwipeRefreshLayout mSwipeRefreshLayout;
     private String[] myDataset = new String[]{"AQUÍ APARECERÁN LOS RUNS TUYOS Y DE TUS AMIGOS,\nDESLIZA HACIA ABAJO PARA VER SI HAY NUEVOS RUNS ;)"};
+    View v;
+
+    public TimelineFragment(){}
 
     @Nullable
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        View v = inflater.inflate(R.layout.fragment_timeline, container, false);
+        // INIT THE VIEWS
+        v = inflater.inflate(R.layout.fragment_timeline, container, false);
+        initViews(v);
 
+        //Start service
+//        timelineController.mStartService();
+
+        return v;
+    }
+
+    /**
+     * Called for first time at start fragment.
+     * @param v - the inflated view to retrieve all fragment views
+     */
+    private void initViews(View v) {
         runnerList = new ArrayList<>();
         runList = new ArrayList<>();
 
@@ -52,7 +72,7 @@ public class TimelineFragment extends Fragment {
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
-                ConnectionService.startActionGetRuns(getActivity());
+                timelineController.mStartService();
             }
         });
         mSwipeRefreshLayout.setRefreshing(true);
@@ -60,73 +80,87 @@ public class TimelineFragment extends Fragment {
         rvRunCards = (RecyclerView)v.findViewById(R.id.runList);
         rvRunCards.setHasFixedSize(true);
         rvRunCards.setLayoutManager(new LinearLayoutManager(getActivity(), LinearLayoutManager.VERTICAL, false));
-        rvRunCards.setAdapter(new DefaultEmptyAdapter(myDataset));
+
         rvRunCards.setItemAnimator(new DefaultItemAnimator());
-/*
-        Intent msgIntent = new Intent(MainActivity.this, ConnectionService.class);
-        msgIntent.setAction(ConnectionService.ACTION_START);
-        startService(msgIntent);
-*/
-        //call service to start from himself, this is an IntentService that's stop automatic from himself too.
-        ConnectionService.startActionGetRuns(getActivity());
 
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ConnectionService.ACTION_GET_RUNS);
-        filter.addAction(ConnectionService.ACTION_ANY_NEW);
-        filter.addAction(ConnectionService.ACTION_START);
-        rcv = new ProgressReceiver();
-        getActivity().registerReceiver(rcv, filter);
-
-        return v;
+        Log.e("TimelineFrag", "VIEWS INITIATED");
     }
 
-    class ProgressReceiver extends BroadcastReceiver {
-
-        @Override
-        public void onReceive(Context context, Intent intent) {
-            mSwipeRefreshLayout.setRefreshing(false);
-            if(intent.getAction().equals(ConnectionService.ACTION_ANY_NEW)) {
-                ArrayList<Runner> lRunnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
-                ArrayList<Run> lRunList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
-
-                if (lRunList == null || lRunnerList == null) {
-                    //mSwipeRefreshLayout.setRefreshing(false);
-                    Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
-                    return;
-                }
-                //if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
-
-                for (int i=0; i<lRunList.size(); i++) {
-                    runList.add(0, lRunList.get(i));
-                    runnerList.add(0, lRunnerList.get(i));
-                }
-                if (runsAdapter == null) {
-                    runsAdapter = new RunsListAdapter(runnerList, runList);
-                    rvRunCards.setAdapter(runsAdapter);
-                }else {
-                    runsAdapter.notifyDataSetChanged();
-                }
-
-                //runsAdapter.notifyDataSetChanged();
-            }
-            else if(intent.getAction().equals(ConnectionService.ACTION_GET_RUNS)) {
-                runnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
-                runList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
-
-                if (runnerList != null && runList != null) {
-                    runsAdapter = new RunsListAdapter(runnerList, runList);
-                    rvRunCards.setAdapter(runsAdapter);
-
-                    //System.out.println("NOMBRE::::::" + runList.get(0).getCommentsList().get(0).getRunnerName());
-                }
-
-            }
-        }
+    private void showNewRunsMessage() {
+        Snackbar.make(rvRunCards, "HAY "+runsAdapter.getItemCount()+" CARRERAS NUEVAS!", Snackbar.LENGTH_LONG)
+                .setAction("CARGAR", new View.OnClickListener() {
+                    @Override
+                    public void onClick(View v) {
+                        //rvRunCards.setAdapter(runsAdapter);
+                        runsAdapter.notifyDataSetChanged();
+                    }
+                })
+                .show();
     }
+
 
     @Override
+    public <T> void onTaskCompleted(T... args) {
+        Log.e("TimelineFrag", "RECEIVING PARAMS FROM CONTROLLER TO REFRESH LIST");
+        String action = args[0].toString();
+        Log.e("ACTION", action);
+
+        // Init local arrays if not initialized
+        if (runList == null || runnerList == null) {
+            runList = new ArrayList<>();
+            runnerList = new ArrayList<>();
+        }
+        /**/
+        if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
+
+        if(action.equals(ApiService.ACTION_ANY_NEW)) {
+            ArrayList<Runner> lRunnerList = (ArrayList<Runner>) args[1];
+            ArrayList<Run> lRunList = (ArrayList<Run>) args[2];
+
+            for (int i=0; i<lRunList.size(); i++) {
+                runList.add(0, lRunList.get(i));
+                runnerList.add(0, lRunnerList.get(i));
+            }
+            if (runsAdapter == null) {
+                runsAdapter = new RunsListAdapter(runnerList, runList);
+                rvRunCards.setAdapter(runsAdapter);
+            }else {
+                showNewRunsMessage();
+            }
+
+            //runsAdapter.notifyDataSetChanged();
+        }
+        else if(action.equals(ApiService.ACTION_GET_TIMELINE)) {
+            runnerList = (ArrayList<Runner>) args[1];
+            runList = (ArrayList<Run>) args[2];
+
+            if (runnerList != null && runList != null) {
+                runsAdapter = new RunsListAdapter(runnerList, runList);
+                rvRunCards.setAdapter(runsAdapter);
+            }
+        } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)) {
+            Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
+            rvRunCards.setAdapter(new DefaultEmptyAdapter(myDataset));
+        }
+
+        if (runsAdapter != null)
+        Log.e("TimelineFrag", "THE LIST CONTAINS "+runsAdapter.getItemCount()+" ITEMS");
+    }
+
+
+    public void setController(TimelineController controller) {
+        this.timelineController = controller;
+    }
+
+
+    /**
+     * Unregister Receiver from the container activity
+     * when this fragment is killed
+    */
+    @Override
     public void onStop() {
-        getActivity().unregisterReceiver(rcv);
+        timelineController.unregisterReceiver();
         super.onStop();
     }
+
 }

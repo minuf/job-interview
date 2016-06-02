@@ -2,6 +2,7 @@ package com.example.jorge.job_interview.classes.models.dao;
 
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.util.Log;
 
 import com.example.jorge.job_interview.classes.models.vo.Runner;
 
@@ -30,9 +31,9 @@ public class RunnerDao {
             //Recorremos el cursor hasta que no haya más registros
             do {
                 String user_id= c.getString(0);
-                String user_name = c.getString(1);
-                String user_photo = c.getString(2);
-                gRunnerList.add(new Runner(user_id, user_name, user_photo));
+                String user_photo = c.getString(1);
+                String user_name = c.getString(2);
+                gRunnerList.add(new Runner(user_id, user_photo, user_name));
                 System.out.println("Selected. ID=" + user_id + ", userName=" + user_name + ", userPhoto=" + user_photo);
             } while(c.moveToNext());
             return gRunnerList;
@@ -46,8 +47,10 @@ public class RunnerDao {
                 //Insertamos los datos en la tabla runners
                 db.execSQL("INSERT OR IGNORE INTO runners (user_id, user_name, user_photo) " +
                         "VALUES ('" + runner.getUserId() + "', '" + runner.getRunnerName() + "', '" + runner.getImgUrl() + "')");
-                System.out.println("runner inserted");
+                System.out.println("runner inserted: ID->"+runner.getUserId()+", NOMBRE->"+runner.getRunnerName());
             }
+        } else {
+            Log.e("RunnerDao", "DB is null");
         }
     }
 }

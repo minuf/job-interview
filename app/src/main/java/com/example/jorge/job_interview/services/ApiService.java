@@ -7,11 +7,11 @@ import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.example.jorge.job_interview.classes.controllers.MainController;
 import com.example.jorge.job_interview.classes.models.dao.RunDao;
 import com.example.jorge.job_interview.classes.models.dao.RunnerDao;
 import com.example.jorge.job_interview.classes.models.vo.Comment;
@@ -38,14 +38,17 @@ import java.util.Map;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class ConnectionService extends IntentService{
+public class ApiService extends IntentService{
+
     private String ACTION= "";
-    public static final String ACTION_GET_RUNS =
-            "com.example.jorge.intent.action.GET_RUNS";
+    public static final String ACTION_GET_TIMELINE =
+            "com.example.jorge.intent.action.GET_TIMELINE";
     public static final String ACTION_ANY_NEW =
             "com.example.jorge.intent.action.ANY_NEW";
     public static final String ACTION_START =
             "com.example.jorge.intent.action.END";
+    public static final String ACTION_NULL =
+            "com.example.jorge.intent.action.NULL";
 
     private boolean readed = false;
 
@@ -53,11 +56,10 @@ public class ConnectionService extends IntentService{
     private ArrayList<Run> gRunList;
     private ArrayList<Comment> gCommentList;
 
-    private String timelineUrl = "http://wispy-wave-1292.getsandbox.com/timeline";
-    private String anyNewRunUrl = "http://wispy-wave-1292.getsandbox.com/timeline/anyNewRun";
 
-    public ConnectionService() {
-        super("ConnectionService");
+
+    public ApiService() {
+        super("ApiService");
     }
 
     /**
@@ -67,36 +69,39 @@ public class ConnectionService extends IntentService{
      * @see IntentService
      */
     // TODO: Customize helper method
-    public static void startActionGetRuns(Context context) {
-        Intent intent = new Intent(context, ConnectionService.class);
-        intent.setAction(ConnectionService.ACTION_START);
+    public static void startActionGetRuns(Context context, String action) {
+        Intent intent = new Intent(context, ApiService.class);
+        intent.setAction(action);
         context.startService(intent);
     }
 
     @Override
     protected void onHandleIntent(Intent intent) {
+
+        cancelAllRequests();
+
         if (intent != null) {
+
+            String timelineUrl = "http://wispy-wave-1292.getsandbox.com/timeline";
+            String anyNewRunUrl = "http://wispy-wave-1292.getsandbox.com/timeline/anyNewRun";
             //generateRequest();
 
-            MainController mainController = new MainController(this);
             final String action = intent.getAction();
-            if (ACTION_START.equals(action)) {
+
+            if (ACTION_GET_TIMELINE.equalsIgnoreCase(action)) {
+                ACTION = ACTION_GET_TIMELINE;
                 if (readFromDb()) {
-                    ACTION = ACTION_ANY_NEW;
-                    if (!readed) {
-                        sendResponse(gRunnerList, gRunList);
-                        System.out.println("READED FROM DATABASE AND LATER FROM SERVER");
-                        requestWithSomeHttpHeaders(anyNewRunUrl);
-                        readed = true;
-                    }else {
-                        System.out.println("READED FROM FROM SERVER NEW RUNS");
-                        requestWithSomeHttpHeaders(anyNewRunUrl);
-                    }
+                    sendResponse(gRunnerList, gRunList);
+                    System.out.println("READED TIMELINE FROM DATABASE");
                 } else {
-                    ACTION = ACTION_GET_RUNS;
                     requestWithSomeHttpHeaders(timelineUrl);
-                    System.out.println("READED FROM SERVER");
+                    System.out.println("READED TIMELINE FROM SERVER");
                 }
+            }
+            else if (ACTION_ANY_NEW.equalsIgnoreCase(action)) {
+                ACTION = ACTION_ANY_NEW;
+                requestWithSomeHttpHeaders(anyNewRunUrl);
+                System.out.println("READED ANYNEW FROM SERVER");
             }
         }
     }
@@ -107,6 +112,7 @@ public class ConnectionService extends IntentService{
             ArrayList<Run> runList;
 
             if (response != null) {
+                Log.e("ApiService", "RESULT != NULL");
                 if (response.getString("status").equalsIgnoreCase("ok")) {
 
                     ParserHelper parserHelper = new ParserHelper(response, getApplicationContext());
@@ -118,6 +124,10 @@ public class ConnectionService extends IntentService{
 
                     storeToDb(runnerList, runList);
                 }
+            } else {
+                Log.e("ApiService", "RESULT IS NULL");
+                ACTION = ACTION_NULL;
+                sendResponse(null, null);
             }
     }
 
@@ -158,6 +168,13 @@ public class ConnectionService extends IntentService{
         bcIntent.setAction(ACTION);
         bcIntent.putExtra("RUNNERS", runnerList);
         bcIntent.putExtra("RUNS", runList);
+        sendBroadcast(bcIntent);
+    }
+
+    public void sendResponse(JSONObject response) {
+        Intent bcIntent = new Intent();
+        bcIntent.setAction(ACTION);
+        bcIntent.putExtra("RESPONSE", response.toString());
         sendBroadcast(bcIntent);
     }
 
@@ -203,6 +220,21 @@ public class ConnectionService extends IntentService{
                 return params;
             }
         };
+        request.setRetryPolicy(new DefaultRetryPolicy(
+                1500,
+                3,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
+        request.setTag("RUN");
         MySingletonVolley.getInstance(this).addToRequestQueue(request);
+    }
+
+    public void cancelAllRequests() {
+        MySingletonVolley.getInstance(this).getRequestQueue().cancelAll("RUN");
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        Log.e("APISERVICE", "SERVICE DESTROYED");
     }
 }
