@@ -153,18 +153,18 @@ public class TimelineController {
             final ArrayList<Runner> lRunnerList = (ArrayList<Runner>) intent.getSerializableExtra("RUNNERS");
             final ArrayList<Run> lRunList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
 
+
             if (ApiService.ACTION_ANY_NEW.equalsIgnoreCase(action)) {
                 sendResult(action, lRunnerList, lRunList); // if fragment is ready send data..
             }
 
-            // IF RESULT RESULT IS TIMELINE CHECKS IF FRAGMENT IS READY AND SEND RESULT
+            // IF RESULT RESULT IS TIMELINE CHECKS IF FRAGMENT IS READY AND SEND RESULT (only used on start app)
             else if (ApiService.ACTION_GET_TIMELINE.equalsIgnoreCase(action) || ApiService.ACTION_NULL.equalsIgnoreCase(action)) {
                 isTimelineReaded = true;
                 if (isFragmentNull) {
                     sendResultWithHandler(action, lRunnerList, lRunList); // if fragment is not ready, wait 400ms and send data.. NO ME GUSTA
                 } else {
                     sendResult(action, lRunnerList, lRunList); // if fragment is ready send data..
-                    Log.e("TimelineCont", "Fragment wasn't null");
                 }
             }
 

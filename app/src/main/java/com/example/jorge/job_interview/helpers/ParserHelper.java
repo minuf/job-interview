@@ -7,7 +7,7 @@ import android.util.Log;
 
 import com.example.jorge.job_interview.classes.models.vo.Comment;
 import com.example.jorge.job_interview.classes.models.vo.Run;
-import com.example.jorge.job_interview.classes.models.vo.RunnatorCard;
+import com.example.jorge.job_interview.classes.models.vo.RunatorCard;
 import com.example.jorge.job_interview.classes.models.vo.Runner;
 import com.google.android.gms.maps.model.LatLng;
 
@@ -125,7 +125,7 @@ public class ParserHelper {
         }
     }
 
-    public ArrayList<RunnatorCard> getParsedCards() {
+    public ArrayList<RunatorCard> getParsedCards() {
         return null;
     }
 }

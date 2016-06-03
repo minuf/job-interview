@@ -29,6 +29,8 @@ import com.example.jorge.job_interview.ui.adapters.DefaultEmptyAdapter;
 import com.example.jorge.job_interview.ui.adapters.RunsListAdapter;
 
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.HashMap;
 
 /**
  * Created by jorge on 27/04/16.
@@ -202,6 +204,28 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             runnerList = (ArrayList<Runner>) args[1];
             runList = (ArrayList<Run>) args[2];
 
+            /**inflate Run setting his Runner**/
+            //parse RunnerList to hashmap
+            HashMap<String, Runner> Runnersmap = new HashMap<>();
+            for (Runner runner : runnerList) Runnersmap.put(runner.getUserId(),runner);
+
+            //set Runner to Run for each Run
+            for (Run run: runList) {
+                run.setRunner(Runnersmap.get(run.getUser_id()));
+                Log.e("FRAGMENT", "USER FROM RUN-> "+run.getUser_id()+" , USER FROM USER-> "+run.getRunner().getUserId());
+            }
+
+            //order by date (implemented in RunVo class
+            Collections.sort(runList);
+            Collections.reverse(runList);
+
+            //set runList to adapter and set adapter to list
+/*
+            if (runList != null) {
+                runsAdapter = new RunsListAdapter(runList);
+                rvRunCards.setAdapter(runsAdapter);
+            }
+*/
             if (runnerList != null && runList != null) {
                 runsAdapter = new RunsListAdapter(runnerList, runList);
                 rvRunCards.setAdapter(runsAdapter);

@@ -8,6 +8,8 @@ import java.util.ArrayList;
  */
 public class Run implements Serializable, Comparable<Run>{
 
+    private Runner runner;
+
     private String runId, dateTime, duration, country, state, city, runnerImage, user_id;
     private double distance;
     private int paceH, paceM, paceS, likes;
@@ -33,6 +35,12 @@ public class Run implements Serializable, Comparable<Run>{
         this.commentsList = commentsList;
         this.user_id = user_id;
     }
+
+    public Runner getRunner() {
+        return runner;
+    }
+
+    public void setRunner(Runner runner) {this.runner = runner;}
 
     public String getRunId() { return runId; }
 

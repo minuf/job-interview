@@ -5,12 +5,12 @@ import java.util.ArrayList;
 /**
  * Created by jorge on 26/04/16.
  */
-public class RunnatorCard implements Comparable<RunnatorCard>{
+public class RunatorCard implements Comparable<RunatorCard>{
     String img_url, user_name, user_city, time, date, run_img_url;
     Double lat, lon;
     ArrayList<Comment> comments;
 
-    public RunnatorCard(String img_url, String user_name, String user_city, String time, String date, String run_img_url, Double lat, Double lon, ArrayList<Comment> comments) {
+    public RunatorCard(String img_url, String user_name, String user_city, String time, String date, String run_img_url, Double lat, Double lon, ArrayList<Comment> comments) {
         this.img_url = img_url;
         this.user_name = user_name;
         this.user_city = user_city;
@@ -96,7 +96,7 @@ public class RunnatorCard implements Comparable<RunnatorCard>{
 
     //Implementation of compareTo method for easy ordering list later with sort method..
     @Override
-    public int compareTo(RunnatorCard another) {
+    public int compareTo(RunatorCard another) {
         return date.compareTo(another.date);
     }
 }
