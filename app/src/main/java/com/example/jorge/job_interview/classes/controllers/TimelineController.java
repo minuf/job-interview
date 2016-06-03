@@ -26,6 +26,9 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Created by jorge on 1/06/16.
@@ -50,13 +53,13 @@ public class TimelineController {
     private ArrayList<Run> gRunList;
     private ArrayList<Comment> gCommentList;
 
+    private ScheduledExecutorService scheduleTaskExecutor;
+
     public TimelineController(AppCompatActivity activity) {
         this.activity = activity;
         gRunnerList = new ArrayList<>();
         gRunList = new ArrayList<>();
         gCommentList = new ArrayList<>();
-        //Register new receiver for the service goes to be created in next lines..
-        registerReceiver();
     }
 
     public void setFragmentView(TimelineFragment timelineFragment) {
@@ -80,8 +83,28 @@ public class TimelineController {
         } else {
             //start anyNew service
             ApiService.startActionGetRuns(activity, ApiService.ACTION_ANY_NEW);
+
+            //start loop for query every 20 sec
+            if (scheduleTaskExecutor == null) {
+                scheduleTaskExecutor = Executors.newScheduledThreadPool(4);
+            }
+            else {
+                mStopService();
+                scheduleTaskExecutor = Executors.newScheduledThreadPool(4);
+            }
+
+            // This schedule a runnable task every 20 seconds
+            scheduleTaskExecutor.scheduleAtFixedRate(new Runnable() {
+                public void run() {
+                    ApiService.startActionGetRuns(activity, ApiService.ACTION_ANY_NEW);
+                }
+            }, 0, 20, TimeUnit.SECONDS);
         }
 
+    }
+
+    public void mStopService() {
+        scheduleTaskExecutor.shutdown();
     }
 
     public void changeFragment() {
@@ -105,17 +128,17 @@ public class TimelineController {
      * register receiver to bind it to container activity,
      * with this can refresh the view directly when receive data from service
      */
-    private void registerReceiver() {
+    public void registerReceiver(AppCompatActivity act) {
         IntentFilter filter = new IntentFilter();
         filter.addAction(ApiService.ACTION_GET_TIMELINE);
         filter.addAction(ApiService.ACTION_ANY_NEW);
         filter.addAction(ApiService.ACTION_START);
         rcv = new ProgressReceiver(presenterListener); //create receiver
-        activity.registerReceiver(rcv, filter); //register receiver
+        act.registerReceiver(rcv, filter); //register receiver
     }
 
-    public void unregisterReceiver() {
-        activity.unregisterReceiver(rcv);
+    public void unregisterReceiver(AppCompatActivity act) {
+        act.unregisterReceiver(rcv);
     }
 
     private void sendResult(String action, ArrayList<Runner> lRunnerList, ArrayList<Run> lRunList) {

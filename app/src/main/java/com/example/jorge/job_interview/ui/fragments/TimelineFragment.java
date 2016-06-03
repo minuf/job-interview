@@ -37,7 +37,8 @@ import java.util.HashMap;
  */
 public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric{
 
-    public static boolean isTymelineSync = false;
+    public boolean isTymelineSync = false;
+    private boolean isActionFromSystem = true;
 
     boolean clicked = false;
 
@@ -83,10 +84,11 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
         mSwipeRefreshLayout.setOnRefreshListener(new SwipeRefreshLayout.OnRefreshListener() {
             @Override
             public void onRefresh() {
+                isActionFromSystem = false;
                 timelineController.mStartService();
             }
         });
-        mSwipeRefreshLayout.setRefreshing(true);
+        //mSwipeRefreshLayout.setRefreshing(true);
 
         rvRunCards = (RecyclerView)v.findViewById(R.id.runList);
         rvRunCards.setHasFixedSize(true);
@@ -149,17 +151,6 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                 })
                 .start();
 
-/*
-        Snackbar.make(rvRunCards, "HAY "+size+" CARRERAS NUEVAS!", Snackbar.LENGTH_LONG)
-                .setAction("CARGAR", new View.OnClickListener() {
-                    @Override
-                    public void onClick(View v) {
-                        //rvRunCards.setAdapter(runsAdapter);
-                        runsAdapter.notifyDataSetChanged();
-                    }
-                })
-                .show();
-*/
     }
 
 
@@ -197,7 +188,12 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                 rvRunCards.setAdapter(runsAdapter);
             }else {
                 if (lRunList != null && lRunList.size() > 0) {
-                    showNewRunsMessage(lRunList.size());
+                    if (isActionFromSystem) {
+                        showNewRunsMessage(lRunList.size());
+                    } else {
+                        runsAdapter.notifyDataSetChanged();
+                        isActionFromSystem = true;
+                    }
                 }
             }
 
@@ -216,6 +212,8 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                 runsAdapter = new RunsListAdapter(runList);
                 rvRunCards.setAdapter(runsAdapter);
             }
+            /** INIT SERVICE ANY NEW RUNS **/
+            timelineController.mStartService();
 
         } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)) {
             Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
@@ -224,6 +222,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
 
         if (runsAdapter != null)
         Log.e("TimelineFrag", "THE LIST CONTAINS "+runsAdapter.getItemCount()+" ITEMS");
+
     }
 
 
@@ -250,14 +249,5 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
     }
 
 
-    /**
-     * Unregister Receiver from the container activity
-     * when this fragment is killed
-    */
-    @Override
-    public void onStop() {
-        timelineController.unregisterReceiver();
-        super.onStop();
-    }
 
 }
