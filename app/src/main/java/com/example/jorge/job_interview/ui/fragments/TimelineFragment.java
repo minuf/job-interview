@@ -1,5 +1,6 @@
 package com.example.jorge.job_interview.ui.fragments;
 
+import android.animation.Animator;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
@@ -12,6 +13,10 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
+import android.widget.FrameLayout;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.jorge.job_interview.R;
@@ -32,6 +37,10 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
 
     public static boolean isTymelineSync = false;
 
+    boolean clicked = false;
+
+    FrameLayout lay_refreshListMessage;
+    Button btn_addToList;
     TimelineController timelineController;
     Fragment loadFragment;
     TimelineController.ProgressReceiver rcv;
@@ -83,11 +92,63 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
 
         rvRunCards.setItemAnimator(new DefaultItemAnimator());
 
+        lay_refreshListMessage = (FrameLayout) v.findViewById(R.id.frame_btnAddToListContainer);
+
+        btn_addToList = (Button) v.findViewById(R.id.btn_addToList);
+
+
         Log.e("TimelineFrag", "VIEWS INITIATED");
     }
 
-    private void showNewRunsMessage() {
-        Snackbar.make(rvRunCards, "HAY "+runsAdapter.getItemCount()+" CARRERAS NUEVAS!", Snackbar.LENGTH_LONG)
+    private void showNewRunsMessage(final int size) {
+/*
+        String runsMsg = (size>1)?" nuevas carreras!":" nueva carrera!";
+        final String msg = String.format("Hay %d %s", size, runsMsg);
+*/
+        clicked = false;
+        rvRunCards.animate()
+                .translationY(lay_refreshListMessage.getHeight()+10)
+                .setDuration(500)
+                .setListener(new Animator.AnimatorListener() {
+                    @Override
+                    public void onAnimationStart(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationEnd(Animator animation) {
+                        btn_addToList.setText("Hay "+size+" nuevas carreras!");
+                        if (!clicked) {
+                            lay_refreshListMessage.setVisibility(View.VISIBLE);
+                        }
+                        btn_addToList.setOnClickListener(new View.OnClickListener() {
+                            @Override
+                            public void onClick(View v) {
+                                clicked = true;
+                                lay_refreshListMessage.setVisibility(View.INVISIBLE);
+                                rvRunCards.animate()
+                                        .translationY(0)
+                                        .setDuration(300)
+                                        .start();
+                                runsAdapter.notifyDataSetChanged();
+                            }
+                        });
+                    }
+
+                    @Override
+                    public void onAnimationCancel(Animator animation) {
+
+                    }
+
+                    @Override
+                    public void onAnimationRepeat(Animator animation) {
+
+                    }
+                })
+                .start();
+
+/*
+        Snackbar.make(rvRunCards, "HAY "+size+" CARRERAS NUEVAS!", Snackbar.LENGTH_LONG)
                 .setAction("CARGAR", new View.OnClickListener() {
                     @Override
                     public void onClick(View v) {
@@ -96,6 +157,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                     }
                 })
                 .show();
+*/
     }
 
 
@@ -120,12 +182,18 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             for (int i=0; i<lRunList.size(); i++) {
                 runList.add(0, lRunList.get(i));
                 runnerList.add(0, lRunnerList.get(i));
+                if (runList.size() > 50) {
+                    runList.remove(runList.size()-1);
+                    runnerList.remove(runnerList.size()-1);
+                }
             }
             if (runsAdapter == null) {
                 runsAdapter = new RunsListAdapter(runnerList, runList);
                 rvRunCards.setAdapter(runsAdapter);
             }else {
-                showNewRunsMessage();
+                if (lRunList != null && lRunList.size() > 0) {
+                    showNewRunsMessage(lRunList.size());
+                }
             }
 
             //runsAdapter.notifyDataSetChanged();

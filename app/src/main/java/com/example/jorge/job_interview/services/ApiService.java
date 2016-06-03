@@ -28,6 +28,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -38,7 +39,8 @@ import java.util.Map;
  * TODO: Customize class - update intent actions, extra parameters and static
  * helper methods.
  */
-public class ApiService extends IntentService{
+public class
+ApiService extends IntentService{
 
     private String ACTION= "";
     public static final String ACTION_GET_TIMELINE =
@@ -120,8 +122,18 @@ public class ApiService extends IntentService{
                     runnerList = parserHelper.getRunners();
                     runList = parserHelper.getRuns();
 
+                    //Collections.sort(runList);
+                    //Collections.reverse(runList);
+/*
+                    for (Run run: runList) {
+                        for (Runner runner: runnerList) {
+                            if (runner.getUserId().equalsIgnoreCase(run.getUser_id())) {
+                                runnerList.set(0, runner);
+                            }
+                        }
+                    }
+*/
                     sendResponse(runnerList, runList);
-
                     storeToDb(runnerList, runList);
                 }
             } else {
@@ -141,8 +153,14 @@ public class ApiService extends IntentService{
 
         RunnerDao runnerDao = new RunnerDao(db);
         RunDao runDao = new RunDao(db, getApplicationContext());
-        gRunnerList = runnerDao.getRunners();
+        //gRunnerList = runnerDao.getRunners();
         gRunList = runDao.getRuns();
+
+        if (gRunList != null) {
+            for (Run run : gRunList) {
+                gRunnerList.add(runnerDao.getRunner(run.getUser_id()));
+            }
+        }
 
         db.close();
         if (gRunnerList != null && !gRunnerList.isEmpty() && gRunList != null && !gRunList.isEmpty()) return true;
@@ -150,6 +168,9 @@ public class ApiService extends IntentService{
     }
 
     public void storeToDb(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
+
+
+
         MSQLiteHelper mDbHelper = new MSQLiteHelper(this, "test_db", null, 1);
         SQLiteDatabase db = mDbHelper.getWritableDatabase();
 
@@ -160,10 +181,22 @@ public class ApiService extends IntentService{
         RunnerDao runnerDao = new RunnerDao(db);
         runnerDao.saveRunners(runnerList);
 
+        Log.e("APISERVICE", ".STORE TO DB");
+        for (Runner runner: runnerList) {
+            Log.e("-","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
+        }
+
         db.close();
     }
 
     public void sendResponse(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
+
+        Log.e("APISERVICE", ".SEND RESPONSE");
+
+        for (Runner runner: runnerList) {
+            Log.e("-","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
+        }
+
         Intent bcIntent = new Intent();
         bcIntent.setAction(ACTION);
         bcIntent.putExtra("RUNNERS", runnerList);
@@ -171,12 +204,6 @@ public class ApiService extends IntentService{
         sendBroadcast(bcIntent);
     }
 
-    public void sendResponse(JSONObject response) {
-        Intent bcIntent = new Intent();
-        bcIntent.setAction(ACTION);
-        bcIntent.putExtra("RESPONSE", response.toString());
-        sendBroadcast(bcIntent);
-    }
 
     public void requestWithSomeHttpHeaders(String url) {
         //GENERATE SIMPLE JSON REQUEST

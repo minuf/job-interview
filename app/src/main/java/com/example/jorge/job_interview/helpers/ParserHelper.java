@@ -3,6 +3,7 @@ package com.example.jorge.job_interview.helpers;
 import android.content.Context;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 
 import com.example.jorge.job_interview.classes.models.vo.Comment;
 import com.example.jorge.job_interview.classes.models.vo.Run;
@@ -46,8 +47,8 @@ public class ParserHelper {
         return runList;
     }
 
-    // THIS METHOD PARSE JSON RESPONSE FROM SERVER TO 2 ARRAYLIST WITH PARSED MODELS
-    public ArrayList<Runner> parseResponse() throws JSONException {
+    // THIS METHOD PARSE JSON RESPONSE FROM SERVER TO 2 ARRAY LIST WITH PARSED MODELS
+    public void parseResponse() throws JSONException {
         JSONObject data = response.getJSONObject("data");
         JSONArray runsList = data.getJSONArray("cards");
         for (int i = 0; i < runsList.length(); i++) {
@@ -117,7 +118,11 @@ public class ParserHelper {
 
             //System.out.println(card.getString("user_name")) ;
         }
-        return null;
+
+        //for debug
+        for (Runner runner: runnerList) {
+            Log.e("PARSEHELPER","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
+        }
     }
 
     public ArrayList<RunnatorCard> getParsedCards() {

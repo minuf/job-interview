@@ -17,11 +17,11 @@ public class MSQLiteHelper extends SQLiteOpenHelper {
             "distance DOUBLE, pace_hour INTEGER, pace_minute INTEGER, pace_seconds INTEGER, "+
             "duration TEXT, country TEXT, state TEXT, city TEXT, "+
             "runner_photo_thumb TEXT, likes INTEGER, user_id TEXT, "+
-            "PRIMARY KEY (run_id), FOREIGN KEY (user_id) REFERENCES runners(user_id))";
+            " FOREIGN KEY (user_id) REFERENCES runners(user_id))";
 
     String sqlCreateComments = "CREATE TABLE IF NOT EXISTS comments (comment_id TEXT NOT NULL, user_id TEXT, "+
             "run_id TEXT NOT NULL, user_photo TEXT, user_name TEXT, comment_text TEXT,"+
-            " PRIMARY KEY (comment_id), FOREIGN KEY (run_id) REFERENCES runs(run_id)) ";
+            " FOREIGN KEY (run_id) REFERENCES runs(run_id)) ";
     String sqlCreate = "CREATE TABLE Usuario (codigo INTEGER, nombre TEXT)";
 
     public MSQLiteHelper(Context contexto, String nombre,

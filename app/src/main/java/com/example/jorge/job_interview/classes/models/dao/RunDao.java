@@ -3,8 +3,10 @@ package com.example.jorge.job_interview.classes.models.dao;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteStatement;
 import android.location.Address;
 import android.location.Geocoder;
+import android.util.Log;
 
 import com.example.jorge.job_interview.classes.models.vo.Comment;
 import com.example.jorge.job_interview.classes.models.vo.Run;
@@ -12,6 +14,8 @@ import com.google.android.gms.maps.model.LatLng;
 
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 /**
@@ -79,6 +83,10 @@ public class RunDao {
 
             } while(c.moveToNext());
             System.out.println("runs count: " + gRunList.size());
+            if (gRunList != null) {
+                Collections.sort(gRunList);
+                Collections.reverse(gRunList);
+            }
             return gRunList;
         }
 
@@ -86,11 +94,13 @@ public class RunDao {
     }
 
     public void saveRuns(ArrayList<Run> runList) {
+        dbRunsLifoProcess(runList.size());
+
         ArrayList<Comment> commentList;
         CommentDao commentDao = new CommentDao();
         for (Run run: runList) {
             //Insertamos los datos en la tabla runners
-            db.execSQL("INSERT OR IGNORE INTO runs (run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds,"+
+            db.execSQL("INSERT INTO runs (run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds,"+
                     " duration, country, state, city, runner_photo_thumb, likes, user_id) " +
                     "VALUES ('" + run.getRunId() + "', '" + run.getDateTime() +"', "  + run.getDistance() + ", " + run.getPaceH() + ", " + run.getPaceM()
                     + ", " + run.getPaceS() + ", '" + run.getDuration()+ "', '" +run.getCountry()+ "', '" +run.getState()
@@ -100,6 +110,21 @@ public class RunDao {
 
             commentList = run.getCommentsList();
             commentDao.saveComments(commentList, db);
+        }
+    }
+
+    public void dbRunsLifoProcess(int sizeToSave) {
+        String countQuery = "SELECT COUNT() FROM runs;";
+        SQLiteStatement s = db.compileStatement( countQuery );
+
+        long count = s.simpleQueryForLong();
+
+        Log.e("RunDao", "LIFO - Count = "+(count+sizeToSave));
+
+        if (count+sizeToSave > 50) {
+            String deleteQuery = "DELETE FROM runs WHERE run_id IN (SELECT run_id FROM runs ORDER BY runs.run_id DESC LIMIT "+sizeToSave+");";
+            db.execSQL(deleteQuery);
+            System.out.println(sizeToSave+" Runs deleted");
         }
     }
 }

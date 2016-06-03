@@ -6,7 +6,7 @@ import java.util.ArrayList;
 /**
  * Created by jorge on 20/04/16.
  */
-public class Run implements Serializable{
+public class Run implements Serializable, Comparable<Run>{
 
     private String runId, dateTime, duration, country, state, city, runnerImage, user_id;
     private double distance;
@@ -100,5 +100,10 @@ public class Run implements Serializable{
 
     public void setLon(Double lon) {
         this.lon = lon;
+    }
+
+    @Override
+    public int compareTo(Run another) {
+        return dateTime.compareTo(another.dateTime);
     }
 }
