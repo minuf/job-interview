@@ -80,14 +80,14 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         mapView.onCreate(null);
         mapView.getMapAsync(this);
     }
-    public void bindItem(Runner runner, Run run){
+    public void bindItem(Run run){
         date = run.getDateTime().substring(0, run.getDateTime().indexOf(" "));
         time = run.getDateTime().substring(run.getDateTime().indexOf(" "), run.getDateTime().length());
         pace = "";
         if (run.getPaceH() != 0) pace += run.getPaceH()+":";
         pace += run.getPaceM()+"'"+run.getPaceS()+"''";
 
-        tvRunnerName.setText(runner.getRunnerName());
+        tvRunnerName.setText(run.getRunner().getRunnerName());
         tvRunLocation.setText(run.getCity());
         tvRunDate.setText(date);
         tvRunTime.setText(time);
@@ -112,7 +112,7 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
                 .build();
 
         picasso.with(ivRunnerImage.getContext())
-                .load(runner.getImgUrl())
+                .load(run.getRunner().getImgUrl())
                 .fit()
                 .transform(transformation)
                         //.resize(android.R.attr.actionBarSize, android.R.attr.actionBarSize)

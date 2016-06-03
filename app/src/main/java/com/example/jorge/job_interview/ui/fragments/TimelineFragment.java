@@ -190,7 +190,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                 }
             }
             if (runsAdapter == null) {
-                runsAdapter = new RunsListAdapter(runnerList, runList);
+                //runsAdapter = new RunsListAdapter(runnerList, runList);
                 rvRunCards.setAdapter(runsAdapter);
             }else {
                 if (lRunList != null && lRunList.size() > 0) {
@@ -204,32 +204,16 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             runnerList = (ArrayList<Runner>) args[1];
             runList = (ArrayList<Run>) args[2];
 
-            /**inflate Run setting his Runner**/
-            //parse RunnerList to hashmap
-            HashMap<String, Runner> Runnersmap = new HashMap<>();
-            for (Runner runner : runnerList) Runnersmap.put(runner.getUserId(),runner);
-
-            //set Runner to Run for each Run
-            for (Run run: runList) {
-                run.setRunner(Runnersmap.get(run.getUser_id()));
-                Log.e("FRAGMENT", "USER FROM RUN-> "+run.getUser_id()+" , USER FROM USER-> "+run.getRunner().getUserId());
-            }
-
-            //order by date (implemented in RunVo class
-            Collections.sort(runList);
-            Collections.reverse(runList);
+            /**sort and inflate Runs, setting his Runner**/
+            runList = sortAndInflateRuns(runnerList, runList);
 
             //set runList to adapter and set adapter to list
-/*
+
             if (runList != null) {
                 runsAdapter = new RunsListAdapter(runList);
                 rvRunCards.setAdapter(runsAdapter);
             }
-*/
-            if (runnerList != null && runList != null) {
-                runsAdapter = new RunsListAdapter(runnerList, runList);
-                rvRunCards.setAdapter(runsAdapter);
-            }
+
         } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)) {
             Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
             rvRunCards.setAdapter(new DefaultEmptyAdapter(myDataset));
@@ -242,6 +226,24 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
 
     public void setController(TimelineController controller) {
         this.timelineController = controller;
+    }
+
+    public ArrayList<Run> sortAndInflateRuns(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
+        //parse RunnerList to hashmap
+        HashMap<String, Runner> Runnersmap = new HashMap<>();
+        for (Runner runner : runnerList) Runnersmap.put(runner.getUserId(),runner);
+
+        //set Runner to Run for each Run
+        for (Run run: runList) {
+            run.setRunner(Runnersmap.get(run.getUser_id()));
+            Log.e("FRAGMENT", "USER FROM RUN-> "+run.getUser_id()+" , USER FROM USER-> "+run.getRunner().getUserId());
+        }
+
+        //order by date (implemented in RunVo class
+        Collections.sort(runList);
+        Collections.reverse(runList);
+
+        return runList;
     }
 
 

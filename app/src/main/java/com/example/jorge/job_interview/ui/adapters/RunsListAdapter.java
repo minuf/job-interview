@@ -16,7 +16,6 @@ import java.util.ArrayList;
  * Created by jorge on 22/04/16.
  */
 public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
-    private ArrayList<Runner> runnerList;
     private ArrayList<Run> runList;
 
     AppCompatActivity activity;
@@ -28,8 +27,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
      * EXCEPTION: 'no adapter attached, skipping layout',
      * that breaks app main thread on some devices
      */
-    public RunsListAdapter(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
-        this.runnerList = runnerList;
+    public RunsListAdapter(ArrayList<Run> runList) {
         this.runList = runList;
     }
 
@@ -42,7 +40,7 @@ public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
 
     @Override
     public void onBindViewHolder(CardsViewHolder holder, int position) {
-        holder.bindItem(runnerList.get(position), runList.get(position));
+        holder.bindItem(runList.get(position));
     }
 
     @Override
