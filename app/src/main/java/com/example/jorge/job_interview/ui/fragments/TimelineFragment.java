@@ -181,16 +181,19 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             ArrayList<Runner> lRunnerList = (ArrayList<Runner>) args[1];
             ArrayList<Run> lRunList = (ArrayList<Run>) args[2];
 
+            /**sort and inflate Runs, setting his Runner**/
+            lRunList = sortAndInflateRuns(lRunnerList, lRunList);
+
+            /** simple lifo for list **/
             for (int i=0; i<lRunList.size(); i++) {
                 runList.add(0, lRunList.get(i));
-                runnerList.add(0, lRunnerList.get(i));
                 if (runList.size() > 50) {
                     runList.remove(runList.size()-1);
-                    runnerList.remove(runnerList.size()-1);
                 }
             }
+            /***/
             if (runsAdapter == null) {
-                //runsAdapter = new RunsListAdapter(runnerList, runList);
+                runsAdapter = new RunsListAdapter(runList);
                 rvRunCards.setAdapter(runsAdapter);
             }else {
                 if (lRunList != null && lRunList.size() > 0) {
