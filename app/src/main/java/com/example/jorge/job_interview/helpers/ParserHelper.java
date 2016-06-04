@@ -7,9 +7,9 @@ import android.util.Log;
 
 import com.example.jorge.job_interview.classes.models.vo.Comment;
 import com.example.jorge.job_interview.classes.models.vo.Run;
-import com.example.jorge.job_interview.classes.models.vo.RunatorCard;
 import com.example.jorge.job_interview.classes.models.vo.Runner;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -114,20 +114,20 @@ public class ParserHelper {
                     card.getString("user_id"));
             nRun.setLat(lat);
             nRun.setLon(lon);
+            nRun.setPolyLineEncoded(card.getString("polyline"));
             runList.add(nRun);
 
             //System.out.println(card.getString("user_name")) ;
         }
 
         //for debug
+        /*
         for (Runner runner: runnerList) {
             Log.e("PARSEHELPER","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
         }
+        */
     }
 
-    public ArrayList<RunatorCard> getParsedCards() {
-        return null;
-    }
 }
 
 

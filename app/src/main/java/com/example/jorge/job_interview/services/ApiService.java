@@ -114,7 +114,6 @@ ApiService extends IntentService{
             ArrayList<Run> runList;
 
             if (response != null) {
-                Log.e("ApiService", "RESULT != NULL");
                 if (response.getString("status").equalsIgnoreCase("ok")) {
 
                     ParserHelper parserHelper = new ParserHelper(response, getApplicationContext());
@@ -137,13 +136,13 @@ ApiService extends IntentService{
                     storeToDb(runnerList, runList);
                 }
             } else {
-                Log.e("ApiService", "RESULT IS NULL");
                 ACTION = ACTION_NULL;
                 sendResponse(null, null);
             }
     }
 
     public boolean readFromDb() {
+
         gRunnerList = new ArrayList<>();
         gRunList = new ArrayList<>();
         gCommentList = new ArrayList<>();
@@ -182,9 +181,6 @@ ApiService extends IntentService{
         runnerDao.saveRunners(runnerList);
 
         Log.e("APISERVICE", ".STORE TO DB");
-        for (Runner runner: runnerList) {
-            Log.e("-","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
-        }
 
         db.close();
     }
@@ -193,9 +189,6 @@ ApiService extends IntentService{
 
         Log.e("APISERVICE", ".SEND RESPONSE");
 
-        for (Runner runner: runnerList) {
-            Log.e("-","ID="+runner.getUserId()+" , NAME= "+runner.getRunnerName());
-        }
 
         Intent bcIntent = new Intent();
         bcIntent.setAction(ACTION);

@@ -2,6 +2,7 @@ package com.example.jorge.job_interview.ui.fragments;
 
 import android.animation.Animator;
 import android.os.Bundle;
+import android.os.Handler;
 import android.support.annotation.Nullable;
 import android.support.design.widget.Snackbar;
 import android.support.v4.app.Fragment;
@@ -104,11 +105,12 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
         Log.e("TimelineFrag", "VIEWS INITIATED");
     }
 
-    private void showNewRunsMessage(final int size) {
+    private void showNewRunsMessage(final ArrayList<Run> lRunList) {
 /*
         String runsMsg = (size>1)?" nuevas carreras!":" nueva carrera!";
         final String msg = String.format("Hay %d %s", size, runsMsg);
 */
+        final int size = lRunList.size();
         clicked = false;
         rvRunCards.animate()
                 .translationY(lay_refreshListMessage.getHeight()+10)
@@ -134,7 +136,9 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                                         .translationY(0)
                                         .setDuration(300)
                                         .start();
+                                simpleLifo(lRunList);
                                 runsAdapter.notifyDataSetChanged();
+                                Log.e("TimelineFrag", "UPDATING LIST FROM MESSAGE CLICK");
                             }
                         });
                     }
@@ -158,7 +162,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
     public <T> void onTaskCompleted(T... args) {
         Log.e("TimelineFrag", "RECEIVING PARAMS FROM CONTROLLER TO REFRESH LIST");
         String action = args[0].toString();
-        Log.e("ACTION", action);
+        Log.e("TimelineFrag", "ACTION"+action+"\nFROM SYSTEM : "+isActionFromSystem);
 
         // Init local arrays if not initialized
         if (runList == null || runnerList == null) {
@@ -175,13 +179,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             /**sort and inflate Runs, setting his Runner**/
             lRunList = sortAndInflateRuns(lRunnerList, lRunList);
 
-            /** simple lifo for list **/
-            for (int i=0; i<lRunList.size(); i++) {
-                runList.add(0, lRunList.get(i));
-                if (runList.size() > 50) {
-                    runList.remove(runList.size()-1);
-                }
-            }
+
             /***/
             if (runsAdapter == null) {
                 runsAdapter = new RunsListAdapter(runList);
@@ -189,10 +187,13 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             }else {
                 if (lRunList != null && lRunList.size() > 0) {
                     if (isActionFromSystem) {
-                        showNewRunsMessage(lRunList.size());
+                        Log.e("TimelineFrag", "SHOWING MESSAGE");
+                        showNewRunsMessage(lRunList);
                     } else {
+                        simpleLifo(lRunList);
                         runsAdapter.notifyDataSetChanged();
                         isActionFromSystem = true;
+                        Log.e("TimelineFrag", "UPDATING LIST");
                     }
                 }
             }
@@ -213,15 +214,21 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
                 rvRunCards.setAdapter(runsAdapter);
             }
             /** INIT SERVICE ANY NEW RUNS **/
-            timelineController.mStartService();
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                timelineController.mStartService();
+            }
+        }, 500);
+            //
 
-        } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)) {
+        } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)&& runsAdapter == null) {
             Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
             rvRunCards.setAdapter(new DefaultEmptyAdapter(myDataset));
         }
 
         if (runsAdapter != null)
-        Log.e("TimelineFrag", "THE LIST CONTAINS "+runsAdapter.getItemCount()+" ITEMS");
+        Log.e("TimelineFrag", "THE NEW ARRAY CONTAINS "+runsAdapter.getItemCount()+" ITEMS");
 
     }
 
@@ -233,12 +240,15 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
     public ArrayList<Run> sortAndInflateRuns(ArrayList<Runner> runnerList, ArrayList<Run> runList) {
         //parse RunnerList to hashmap
         HashMap<String, Runner> Runnersmap = new HashMap<>();
-        for (Runner runner : runnerList) Runnersmap.put(runner.getUserId(),runner);
+        for (Runner runner : runnerList) {
+            Log.e("TIMELINEFRAG","CONVERTING TO MAP->"+runner.getUserId());
+            Runnersmap.put(runner.getUserId(),runner);
+        }
 
         //set Runner to Run for each Run
         for (Run run: runList) {
+            Log.e("TIMELINEFRAG", "Setting runner to run ->"+Runnersmap.get(run.getUser_id()));
             run.setRunner(Runnersmap.get(run.getUser_id()));
-            Log.e("FRAGMENT", "USER FROM RUN-> "+run.getUser_id()+" , USER FROM USER-> "+run.getRunner().getUserId());
         }
 
         //order by date (implemented in RunVo class
@@ -246,6 +256,16 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
         Collections.reverse(runList);
 
         return runList;
+    }
+
+    public void simpleLifo(ArrayList<Run> lRunList) {
+        /** simple lifo for list **/
+        for (int i=0; i<lRunList.size(); i++) {
+            runList.add(0, lRunList.get(i));
+            if (runList.size() > 50) {
+                runList.remove(runList.size()-1);
+            }
+        }
     }
 
 

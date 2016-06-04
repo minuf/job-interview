@@ -2,6 +2,7 @@ package com.example.jorge.job_interview.ui.adapters;
 
 import android.graphics.Color;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.View;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
@@ -18,22 +19,25 @@ import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.CameraPosition;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.maps.android.PolyUtil;
 import com.makeramen.roundedimageview.RoundedTransformationBuilder;
 import com.squareup.picasso.Picasso;
 import com.squareup.picasso.Transformation;
+
+import java.util.List;
 
 /**
  * Created by jorge on 25/04/16.
  */
 public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
 
-    ImageView ivRunnerImage;
+    ImageView ivRunnerImage, ivMap;
     ImageView ivRunThumb, ivCommentThumb, btnComment, btnLike;
     TextView tvRunnerName, tvRunLocation, tvRunDate, tvRunTime, tvRunDistance, tvRunPace, tvRunDuration, tvRunLikes, tvCommentRunnerName, tvCommentRunnerComment;
     String date, time, pace;
     LinearLayout commentsLay;
     FrameLayout mapLay;
-    public MapView mapView;
+    //public MapView mapView;
     Picasso picasso;
     LatLng location = new LatLng(39.4666667, -0.3666667);
 
@@ -76,9 +80,10 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         tvCommentRunnerName = (TextView) itemView.findViewById(R.id.tv_comment_runner_name);
         tvCommentRunnerComment = (TextView) itemView.findViewById(R.id.tv_comment_runner_comment);
         commentsLay = (LinearLayout) itemView.findViewById(R.id.comments_layout);
-        mapView = (MapView) itemView.findViewById(R.id.map_layout);
-        mapView.onCreate(null);
-        mapView.getMapAsync(this);
+        ivMap = (ImageView) itemView.findViewById(R.id.iv_map);
+        //mapView = (MapView) itemView.findViewById(R.id.map_layout);
+        //mapView.onCreate(null);
+        //mapView.getMapAsync(this);
     }
     public void bindItem(Run run){
         date = run.getDateTime().substring(0, run.getDateTime().indexOf(" "));
@@ -138,13 +143,43 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         if (lat != null && lon != null) {
             location = new LatLng(lat, lon);
         }
+
+        String polyline = run.getPolyLineEncoded();
+        List<LatLng> runRoutes = PolyUtil.decode(polyline);
+        String baseUrl = "http://maps.googleapis.com/maps/api/staticmap?size=400x300&path=color:0x0AD1CA|weight:13";
+        String endUrl = "";
+
+        int itemRmv = 1;
+        while (runRoutes.size() > 6) {
+            int size = runRoutes.size();
+            runRoutes.remove(itemRmv);
+            if (size>6) {
+                runRoutes.remove(size - 1 - itemRmv);
+            }
+            //itemRmv++;
+        }
+
+        for (LatLng latLng: runRoutes) {
+            endUrl += "|"+latLng.latitude+","+latLng.longitude;
+        }
+
+
+        //Log.e("cardsviewholder", baseUrl+endUrl);
+
+
+        picasso.with(ivMap.getContext())
+                .load(baseUrl+endUrl)
+                .fit()
+                .into(ivMap);
+
+        /*
         CameraPosition camPos = new CameraPosition.Builder()
                 .target(location)
                 .zoom(15)
                 .build();
         CameraUpdate camUpd = CameraUpdateFactory.newCameraPosition(camPos);
-        mapView.getMap().moveCamera(camUpd);//getMap deprecated, best implementation in onMapReadyCallback
-
+        //mapView.getMap().moveCamera(camUpd);//getMap deprecated, best implementation in onMapReadyCallback
+*/
     }
 
 }

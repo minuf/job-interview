@@ -36,7 +36,7 @@ public class RunDao {
         ArrayList<Comment> gCommentList = new ArrayList<>();
         ArrayList<Run> gRunList = new ArrayList<>();
         String[] runFields = {"run_id", "dateTime", "distance", "pace_hour", "pace_minute", "pace_seconds",
-                "duration", "country", "state", "city", "runner_photo_thumb", "likes", "user_id"};
+                "duration", "country", "state", "city", "runner_photo_thumb", "likes", "polyline", "user_id"};
         Cursor c = db.query("runs", runFields, null, null, null, null, null);
 
         if (c.moveToFirst()) {
@@ -54,7 +54,8 @@ public class RunDao {
                 String city = c.getString(9);
                 String runnerImg = c.getString(10);
                 int likes = c.getInt(11);
-                String user_id = c.getString(12);
+                String polyline = c.getString(12);
+                String user_id = c.getString(13);
 
                 CommentDao commentDao = new CommentDao();
 
@@ -77,6 +78,7 @@ public class RunDao {
                 Run nRun = new Run(run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds, duration, country, state, city, runnerImg, likes, gCommentList, user_id);
                 nRun.setLat(lat);
                 nRun.setLon(lon);
+                nRun.setPolyLineEncoded(polyline);
                 gRunList.add(nRun);
                 //nRun = null;
                 //gCommentList.clear(); // reset commentList for next run
@@ -101,11 +103,11 @@ public class RunDao {
         for (Run run: runList) {
             //Insertamos los datos en la tabla runners
             db.execSQL("INSERT INTO runs (run_id, dateTime, distance, pace_hour, pace_minute, pace_seconds,"+
-                    " duration, country, state, city, runner_photo_thumb, likes, user_id) " +
+                    " duration, country, state, city, runner_photo_thumb, likes, polyline, user_id) " +
                     "VALUES ('" + run.getRunId() + "', '" + run.getDateTime() +"', "  + run.getDistance() + ", " + run.getPaceH() + ", " + run.getPaceM()
                     + ", " + run.getPaceS() + ", '" + run.getDuration()+ "', '" +run.getCountry()+ "', '" +run.getState()
-                    + "', '" +run.getCity()+ "', '" +run.getRunnerImage()+ "', " +run.getLikes()+ ", '" +run.getUser_id()
-                    +"')");
+                    + "', '" +run.getCity()+ "', '" +run.getRunnerImage()+ "', " +run.getLikes()+ ", \"" +run.getPolyLineEncoded()
+                    +"\", '"+run.getUser_id() +"')");
             System.out.println("run inserted");
 
             commentList = run.getCommentsList();

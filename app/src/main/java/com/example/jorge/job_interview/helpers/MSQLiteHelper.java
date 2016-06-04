@@ -16,7 +16,7 @@ public class MSQLiteHelper extends SQLiteOpenHelper {
     String sqlCreateRuns = "CREATE TABLE IF NOT EXISTS runs (run_id TEXT NOT NULL, dateTime TEXT NOT NULL, "+
             "distance DOUBLE, pace_hour INTEGER, pace_minute INTEGER, pace_seconds INTEGER, "+
             "duration TEXT, country TEXT, state TEXT, city TEXT, "+
-            "runner_photo_thumb TEXT, likes INTEGER, user_id TEXT, "+
+            "runner_photo_thumb TEXT, likes INTEGER, polyline TEXT, user_id TEXT, "+
             " FOREIGN KEY (user_id) REFERENCES runners(user_id))";
 
     String sqlCreateComments = "CREATE TABLE IF NOT EXISTS comments (comment_id TEXT NOT NULL, user_id TEXT, "+

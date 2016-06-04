@@ -10,7 +10,7 @@ public class Run implements Serializable, Comparable<Run>{
 
     private Runner runner;
 
-    private String runId, dateTime, duration, country, state, city, runnerImage, user_id;
+    private String runId, dateTime, duration, country, state, city, runnerImage, user_id, polyLineEncoded;
     private double distance;
     private int paceH, paceM, paceS, likes;
     private ArrayList<Comment> commentsList;
@@ -34,6 +34,15 @@ public class Run implements Serializable, Comparable<Run>{
         this.likes = likes;
         this.commentsList = commentsList;
         this.user_id = user_id;
+        this.polyLineEncoded = "";
+    }
+
+    public String getPolyLineEncoded() {
+        return polyLineEncoded;
+    }
+
+    public void setPolyLineEncoded(String polyLineEncoded) {
+        this.polyLineEncoded = polyLineEncoded;
     }
 
     public Runner getRunner() {
