@@ -111,13 +111,15 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
 
         final int size = lRunList.size();
 
+        String newRuns = (size>1)?" nuevas carreras!":" nueva carrera!";
+
         lay_refreshListMessage.animate()
                 .alpha(1.0f)
                 .setDuration(400)
                 .start();
         isMessageOpen = true;
 
-        btn_addToList.setText("Hay "+size+" nuevas carreras!");
+        btn_addToList.setText("Hay "+size+newRuns);
         if (!clicked) {
             lay_refreshListMessage.animate().alpha(1.0f).setDuration(500).start();
         }
