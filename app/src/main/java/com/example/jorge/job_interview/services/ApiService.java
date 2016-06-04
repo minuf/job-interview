@@ -4,6 +4,8 @@ import android.app.IntentService;
 import android.content.Context;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.util.Log;
 
 import com.android.volley.AuthFailureError;
@@ -96,13 +98,23 @@ ApiService extends IntentService{
                     sendResponse(gRunnerList, gRunList);
                     System.out.println("READED TIMELINE FROM DATABASE");
                 } else {
-                    requestWithSomeHttpHeaders(timelineUrl);
+                    if (checkDeviceConnection()) {
+                        requestWithSomeHttpHeaders(timelineUrl);
+                    } else {
+                        ACTION = ACTION_NULL;
+                        sendResponse(null, null);
+                    }
                     System.out.println("READED TIMELINE FROM SERVER");
                 }
             }
             else if (ACTION_ANY_NEW.equalsIgnoreCase(action)) {
                 ACTION = ACTION_ANY_NEW;
-                requestWithSomeHttpHeaders(anyNewRunUrl);
+                if (checkDeviceConnection()) {
+                    requestWithSomeHttpHeaders(anyNewRunUrl);
+                } else {
+                    ACTION = ACTION_NULL;
+                    sendResponse(null, null);
+                }
                 System.out.println("READED ANYNEW FROM SERVER");
             }
         }
@@ -250,6 +262,19 @@ ApiService extends IntentService{
 
     public void cancelAllRequests() {
         MySingletonVolley.getInstance(this).getRequestQueue().cancelAll("RUN");
+    }
+
+    public boolean checkDeviceConnection() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo i = conMgr.getActiveNetworkInfo();
+        if (i == null)
+            return false;
+        if (!i.isConnected())
+            return false;
+        if (!i.isAvailable())
+            return false;
+        return true;
     }
 
     @Override

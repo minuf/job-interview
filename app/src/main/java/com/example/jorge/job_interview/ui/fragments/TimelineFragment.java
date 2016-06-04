@@ -38,8 +38,8 @@ import java.util.HashMap;
  */
 public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric{
 
-    public boolean isTymelineSync = false;
     private boolean isActionFromSystem = true;
+    private boolean isMessageOpen = false;
 
     boolean clicked = false;
 
@@ -110,50 +110,46 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
         String runsMsg = (size>1)?" nuevas carreras!":" nueva carrera!";
         final String msg = String.format("Hay %d %s", size, runsMsg);
 */
+
         final int size = lRunList.size();
-        clicked = false;
-        rvRunCards.animate()
-                .translationY(lay_refreshListMessage.getHeight()+10)
-                .setDuration(500)
-                .setListener(new Animator.AnimatorListener() {
-                    @Override
-                    public void onAnimationStart(Animator animation) {
 
-                    }
-
-                    @Override
-                    public void onAnimationEnd(Animator animation) {
-                        btn_addToList.setText("Hay "+size+" nuevas carreras!");
-                        if (!clicked) {
-                            lay_refreshListMessage.setVisibility(View.VISIBLE);
-                        }
-                        btn_addToList.setOnClickListener(new View.OnClickListener() {
-                            @Override
-                            public void onClick(View v) {
-                                clicked = true;
-                                lay_refreshListMessage.setVisibility(View.INVISIBLE);
-                                rvRunCards.animate()
-                                        .translationY(0)
-                                        .setDuration(300)
-                                        .start();
-                                simpleLifo(lRunList);
-                                runsAdapter.notifyDataSetChanged();
-                                Log.e("TimelineFrag", "UPDATING LIST FROM MESSAGE CLICK");
-                            }
-                        });
-                    }
-
-                    @Override
-                    public void onAnimationCancel(Animator animation) {
-
-                    }
-
-                    @Override
-                    public void onAnimationRepeat(Animator animation) {
-
-                    }
-                })
+        lay_refreshListMessage.animate()
+                .alpha(1.0f)
+                .setDuration(400)
                 .start();
+        isMessageOpen = true;
+
+        btn_addToList.setText("Hay "+size+" nuevas carreras!");
+        if (!clicked) {
+            lay_refreshListMessage.animate().alpha(1.0f).setDuration(500).start();
+        }
+        btn_addToList.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                closeNewRunsMessage();
+                simpleLifo(lRunList);
+                runsAdapter.notifyDataSetChanged();
+                Log.e("TimelineFrag", "UPDATING LIST FROM MESSAGE CLICK");
+            }
+        });
+
+        new Handler().postDelayed(new Runnable() {
+            @Override
+            public void run() {
+                closeNewRunsMessage();
+            }
+        }, 5000);
+
+    }
+
+    private void closeNewRunsMessage() {
+        if (isMessageOpen) {
+            lay_refreshListMessage.animate()
+                    .alpha(0.0f)
+                    .setDuration(300)
+                    .start();
+            isMessageOpen = false;
+        }
 
     }
 
