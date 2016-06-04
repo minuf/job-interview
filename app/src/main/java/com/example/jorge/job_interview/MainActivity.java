@@ -1,8 +1,12 @@
 package com.example.jorge.job_interview;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.widget.Toast;
 
 import com.example.jorge.job_interview.classes.controllers.TimelineController;
 import com.example.jorge.job_interview.ui.fragments.LoadFragment;
@@ -20,12 +24,17 @@ public class MainActivity extends AppCompatActivity{
 
     @Override
     public void onResume() {
-        getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
-        timelineController = new TimelineController(this);
-        timelineController.setFragmentView(timelineFragment);
-        timelineFragment.setController(timelineController);
-        timelineController.init();
-        timelineController.registerReceiver(this);
+        if (checkDeviceConnection()) {
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
+            timelineController = new TimelineController(this);
+            timelineController.setFragmentView(timelineFragment);
+            timelineFragment.setController(timelineController);
+            timelineController.init();
+            timelineController.registerReceiver(this);
+        } else {
+            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
+            Toast.makeText(this, "Parece que no tienes conexión a internet, por favor asegurate de estar conectado.", Toast.LENGTH_LONG).show();
+        }
         super.onResume();
     }
 
@@ -34,6 +43,19 @@ public class MainActivity extends AppCompatActivity{
         //moveTaskToBack(true);
         timelineController.mStopService();
         finish();
+    }
+
+    public boolean checkDeviceConnection() {
+        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext()
+                .getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo i = conMgr.getActiveNetworkInfo();
+        if (i == null)
+            return false;
+        if (!i.isConnected())
+            return false;
+        if (!i.isAvailable())
+            return false;
+        return true;
     }
 
 

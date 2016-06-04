@@ -53,6 +53,9 @@ ApiService extends IntentService{
             "com.example.jorge.intent.action.END";
     public static final String ACTION_NULL =
             "com.example.jorge.intent.action.NULL";
+    public static final String ACTION_NO_CONNECTION =
+            "com.example.jorge.intent.action.NO_CONNECTION";
+
 
     private boolean readed = false;
 
@@ -98,23 +101,13 @@ ApiService extends IntentService{
                     sendResponse(gRunnerList, gRunList);
                     System.out.println("READED TIMELINE FROM DATABASE");
                 } else {
-                    if (checkDeviceConnection()) {
                         requestWithSomeHttpHeaders(timelineUrl);
-                    } else {
-                        ACTION = ACTION_NULL;
-                        sendResponse(null, null);
-                    }
                     System.out.println("READED TIMELINE FROM SERVER");
                 }
             }
             else if (ACTION_ANY_NEW.equalsIgnoreCase(action)) {
                 ACTION = ACTION_ANY_NEW;
-                if (checkDeviceConnection()) {
                     requestWithSomeHttpHeaders(anyNewRunUrl);
-                } else {
-                    ACTION = ACTION_NULL;
-                    sendResponse(null, null);
-                }
                 System.out.println("READED ANYNEW FROM SERVER");
             }
         }
@@ -264,18 +257,7 @@ ApiService extends IntentService{
         MySingletonVolley.getInstance(this).getRequestQueue().cancelAll("RUN");
     }
 
-    public boolean checkDeviceConnection() {
-        ConnectivityManager conMgr = (ConnectivityManager) getApplicationContext()
-                .getSystemService(Context.CONNECTIVITY_SERVICE);
-        NetworkInfo i = conMgr.getActiveNetworkInfo();
-        if (i == null)
-            return false;
-        if (!i.isConnected())
-            return false;
-        if (!i.isAvailable())
-            return false;
-        return true;
-    }
+    
 
     @Override
     public void onDestroy() {

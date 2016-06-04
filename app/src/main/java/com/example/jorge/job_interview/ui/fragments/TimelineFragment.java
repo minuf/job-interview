@@ -218,7 +218,7 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
         }, 500);
             //
 
-        } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)&& runsAdapter == null) {
+        } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)&& runsAdapter == null || ApiService.ACTION_NO_CONNECTION.equalsIgnoreCase(action)) {
             Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
             rvRunCards.setAdapter(new DefaultEmptyAdapter(myDataset));
         }

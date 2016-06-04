@@ -177,7 +177,7 @@ public class TimelineController {
             final ArrayList<Run> lRunList = (ArrayList<Run>) intent.getSerializableExtra("RUNS");
 
 
-            if (ApiService.ACTION_ANY_NEW.equalsIgnoreCase(action)) {
+            if (ApiService.ACTION_ANY_NEW.equalsIgnoreCase(action) || ApiService.ACTION_NO_CONNECTION.equalsIgnoreCase(action)) {
                 sendResult(action, lRunnerList, lRunList); // if fragment is ready send data..
             }
 
