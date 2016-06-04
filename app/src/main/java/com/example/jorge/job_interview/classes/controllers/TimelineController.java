@@ -36,7 +36,8 @@ import java.util.concurrent.TimeUnit;
 public class TimelineController {
 
     private boolean refreshFromSystem = true; //if true, when receive new runs, shows new runs message dialog
-    private static boolean isTimelineReaded = false;
+    private boolean isTimelineReaded = false;
+    private boolean isReceiverRegistered = false;
 
     private boolean isFragmentNull = true;
 
@@ -129,16 +130,22 @@ public class TimelineController {
      * with this can refresh the view directly when receive data from service
      */
     public void registerReceiver(AppCompatActivity act) {
-        IntentFilter filter = new IntentFilter();
-        filter.addAction(ApiService.ACTION_GET_TIMELINE);
-        filter.addAction(ApiService.ACTION_ANY_NEW);
-        filter.addAction(ApiService.ACTION_START);
-        rcv = new ProgressReceiver(presenterListener); //create receiver
-        act.registerReceiver(rcv, filter); //register receiver
+        if (!isReceiverRegistered) {
+            IntentFilter filter = new IntentFilter();
+            filter.addAction(ApiService.ACTION_GET_TIMELINE);
+            filter.addAction(ApiService.ACTION_ANY_NEW);
+            filter.addAction(ApiService.ACTION_START);
+            rcv = new ProgressReceiver(presenterListener); //create receiver
+            act.registerReceiver(rcv, filter); //register receiver
+            isReceiverRegistered = true;
+        }
     }
 
     public void unregisterReceiver(AppCompatActivity act) {
-        act.unregisterReceiver(rcv);
+        if (isReceiverRegistered) {
+            act.unregisterReceiver(rcv);
+            isReceiverRegistered = false;
+        }
     }
 
     private void sendResult(String action, ArrayList<Runner> lRunnerList, ArrayList<Run> lRunList) {

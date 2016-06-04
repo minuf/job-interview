@@ -20,10 +20,6 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-    }
-
-    @Override
-    public void onResume() {
         if (checkDeviceConnection()) {
             getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
             timelineController = new TimelineController(this);
@@ -35,6 +31,11 @@ public class MainActivity extends AppCompatActivity{
             getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
             Toast.makeText(this, "Parece que no tienes conexión a internet, por favor asegurate de estar conectado.", Toast.LENGTH_LONG).show();
         }
+    }
+
+    @Override
+    public void onResume() {
+
         super.onResume();
     }
 

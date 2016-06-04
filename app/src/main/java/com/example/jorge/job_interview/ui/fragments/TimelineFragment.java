@@ -46,8 +46,6 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
     FrameLayout lay_refreshListMessage;
     Button btn_addToList;
     TimelineController timelineController;
-    Fragment loadFragment;
-    TimelineController.ProgressReceiver rcv;
     RecyclerView rvRunCards;
     RunsListAdapter runsAdapter;
     ArrayList<Runner> runnerList;
@@ -166,57 +164,67 @@ public class TimelineFragment extends Fragment implements OnTaskCompletedGeneric
             runnerList = new ArrayList<>();
         }
         /**/
+
         if (mSwipeRefreshLayout.isRefreshing()) mSwipeRefreshLayout.setRefreshing(false);
 
         if(action.equals(ApiService.ACTION_ANY_NEW)) {
-            ArrayList<Runner> lRunnerList = (ArrayList<Runner>) args[1];
-            ArrayList<Run> lRunList = (ArrayList<Run>) args[2];
 
-            /**sort and inflate Runs, setting his Runner**/
-            lRunList = sortAndInflateRuns(lRunnerList, lRunList);
+                ArrayList<Runner> lRunnerList = (ArrayList<Runner>) args[1];
+                ArrayList<Run> lRunList = (ArrayList<Run>) args[2];
+            if (lRunList != null && lRunList != null) {
+                /**sort and inflate Runs, setting his Runner**/
+                lRunList = sortAndInflateRuns(lRunnerList, lRunList);
 
 
-            /***/
-            if (runsAdapter == null) {
-                runsAdapter = new RunsListAdapter(runList);
-                rvRunCards.setAdapter(runsAdapter);
-            }else {
-                if (lRunList != null && lRunList.size() > 0) {
-                    if (isActionFromSystem) {
-                        Log.e("TimelineFrag", "SHOWING MESSAGE");
-                        showNewRunsMessage(lRunList);
-                    } else {
-                        simpleLifo(lRunList);
-                        runsAdapter.notifyDataSetChanged();
-                        isActionFromSystem = true;
-                        Log.e("TimelineFrag", "UPDATING LIST");
+                /***/
+                if (runsAdapter == null) {
+                    runsAdapter = new RunsListAdapter(runList, getContext());
+                    rvRunCards.setAdapter(runsAdapter);
+                } else {
+                    if (lRunList != null && lRunList.size() > 0) {
+                        if (isActionFromSystem) {
+                            Log.e("TimelineFrag", "SHOWING MESSAGE");
+                            showNewRunsMessage(lRunList);
+                        } else {
+                            simpleLifo(lRunList);
+                            runsAdapter.notifyDataSetChanged();
+                            isActionFromSystem = true;
+                            Log.e("TimelineFrag", "UPDATING LIST");
+                        }
                     }
                 }
             }
+            else {
+                if (!isActionFromSystem)
+                Snackbar.make(rvRunCards, "Algo ha fallado en la comunicación, por favor revisa tu conexión a internet y vuelve a intentarlo..", Snackbar.LENGTH_LONG).show();
+            }
 
-            //runsAdapter.notifyDataSetChanged();
         }
         else if(action.equals(ApiService.ACTION_GET_TIMELINE)) {
             runnerList = (ArrayList<Runner>) args[1];
             runList = (ArrayList<Run>) args[2];
 
-            /**sort and inflate Runs, setting his Runner**/
-            runList = sortAndInflateRuns(runnerList, runList);
+            if (runnerList != null && runList != null) {
+                /**sort and inflate Runs, setting his Runner**/
+                runList = sortAndInflateRuns(runnerList, runList);
 
-            //set runList to adapter and set adapter to list
+                //set runList to adapter and set adapter to list
 
-            if (runList != null) {
-                runsAdapter = new RunsListAdapter(runList);
-                rvRunCards.setAdapter(runsAdapter);
+                if (runList != null) {
+                    runsAdapter = new RunsListAdapter(runList, getContext());
+                    rvRunCards.setAdapter(runsAdapter);
+                }
+                /** INIT SERVICE ANY NEW RUNS **/
+                new Handler().postDelayed(new Runnable() {
+                    @Override
+                    public void run() {
+                        timelineController.mStartService();
+                    }
+                }, 1000);
             }
-            /** INIT SERVICE ANY NEW RUNS **/
-        new Handler().postDelayed(new Runnable() {
-            @Override
-            public void run() {
-                timelineController.mStartService();
+            else {
+                Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();
             }
-        }, 500);
-            //
 
         } else if (action.equalsIgnoreCase(ApiService.ACTION_NULL)&& runsAdapter == null || ApiService.ACTION_NO_CONNECTION.equalsIgnoreCase(action)) {
             Snackbar.make(rvRunCards, "Lo sentimos, no se puede conectar con el servidor. Intentelo en unos segundos...", Snackbar.LENGTH_LONG).show();

@@ -1,10 +1,13 @@
 package com.example.jorge.job_interview.ui.adapters;
 
+import android.content.Context;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 
 import com.example.jorge.job_interview.R;
 import com.example.jorge.job_interview.classes.models.vo.Run;
@@ -17,6 +20,7 @@ import java.util.ArrayList;
  */
 public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
     private ArrayList<Run> runList;
+    private Context context;
 
     AppCompatActivity activity;
 
@@ -27,8 +31,9 @@ public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
      * EXCEPTION: 'no adapter attached, skipping layout',
      * that breaks app main thread on some devices
      */
-    public RunsListAdapter(ArrayList<Run> runList) {
+    public RunsListAdapter(ArrayList<Run> runList, Context context) {
         this.runList = runList;
+        this.context = context;
     }
 
     @Override
@@ -40,7 +45,11 @@ public class RunsListAdapter extends RecyclerView.Adapter<CardsViewHolder> {
 
     @Override
     public void onBindViewHolder(CardsViewHolder holder, int position) {
+        Animation animation = AnimationUtils.loadAnimation(context, android.R.anim.slide_in_left);
+        animation.setDuration(150);
+        holder.itemView.startAnimation(animation);
         holder.bindItem(runList.get(position));
+
     }
 
     @Override

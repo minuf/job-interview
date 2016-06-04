@@ -22,6 +22,7 @@ import com.example.jorge.job_interview.classes.models.vo.Runner;
 import com.example.jorge.job_interview.classes.singleton.MySingletonVolley;
 import com.example.jorge.job_interview.helpers.MSQLiteHelper;
 import com.example.jorge.job_interview.helpers.ParserHelper;
+import com.example.jorge.job_interview.interfaces.OnTaskCompletedGeneric;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -62,6 +63,8 @@ ApiService extends IntentService{
     private ArrayList<Runner> gRunnerList;
     private ArrayList<Run> gRunList;
     private ArrayList<Comment> gCommentList;
+
+    public OnTaskCompletedGeneric listener;
 
 
 
@@ -257,7 +260,7 @@ ApiService extends IntentService{
         MySingletonVolley.getInstance(this).getRequestQueue().cancelAll("RUN");
     }
 
-    
+
 
     @Override
     public void onDestroy() {
