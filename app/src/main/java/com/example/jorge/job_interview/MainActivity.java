@@ -20,15 +20,14 @@ public class MainActivity extends AppCompatActivity{
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        if (checkDeviceConnection()) {
-            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
+        getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
+        if (true) {
             timelineController = new TimelineController(this);
             timelineController.setFragmentView(timelineFragment);
             timelineFragment.setController(timelineController);
             timelineController.init();
             timelineController.registerReceiver(this);
         } else {
-            getSupportFragmentManager().beginTransaction().add(R.id.main_fragment, new LoadFragment()).commit();
             Toast.makeText(this, "Parece que no tienes conexión a internet, por favor asegurate de estar conectado.", Toast.LENGTH_LONG).show();
         }
     }
@@ -62,7 +61,7 @@ public class MainActivity extends AppCompatActivity{
 
     /**
      * Unregister Receiver from the container activity
-     * when this fragment is killed
+     * when the activity is killed
      */
 
     @Override

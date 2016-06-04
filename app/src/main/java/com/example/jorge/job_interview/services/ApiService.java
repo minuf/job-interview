@@ -94,17 +94,18 @@ ApiService extends IntentService{
 
             String timelineUrl = "http://wispy-wave-1292.getsandbox.com/timeline";
             String anyNewRunUrl = "http://wispy-wave-1292.getsandbox.com/timeline/anyNewRun";
-            //generateRequest();
 
             final String action = intent.getAction();
 
             if (ACTION_GET_TIMELINE.equalsIgnoreCase(action)) {
                 ACTION = ACTION_GET_TIMELINE;
+
                 if (readFromDb()) {
+
                     sendResponse(gRunnerList, gRunList);
                     System.out.println("READED TIMELINE FROM DATABASE");
                 } else {
-                        requestWithSomeHttpHeaders(timelineUrl);
+                    requestWithSomeHttpHeaders(timelineUrl);
                     System.out.println("READED TIMELINE FROM SERVER");
                 }
             }

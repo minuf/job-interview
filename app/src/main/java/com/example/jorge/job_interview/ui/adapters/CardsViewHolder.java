@@ -29,7 +29,7 @@ import java.util.List;
 /**
  * Created by jorge on 25/04/16.
  */
-public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapReadyCallback {
+public class CardsViewHolder extends RecyclerView.ViewHolder{
 
     ImageView ivRunnerImage, ivMap;
     ImageView ivRunThumb, ivCommentThumb, btnComment, btnLike;
@@ -40,10 +40,10 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
     //public MapView mapView;
     Picasso picasso;
     LatLng location = new LatLng(39.4666667, -0.3666667);
-
+/*
     @Override
     public void onMapReady(GoogleMap map) {
-        /*
+
         CameraPosition camPos = new CameraPosition.Builder()
                 .target(location)
                 .zoom(15)
@@ -61,8 +61,9 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
                 .rotateGesturesEnabled(false)
                 .scrollGesturesEnabled(false)
                 ;
-        */
+
     }
+*/
 
 
     public CardsViewHolder(View itemView) {
@@ -164,7 +165,8 @@ public class CardsViewHolder extends RecyclerView.ViewHolder implements OnMapRea
         }
 
 
-        //Log.e("cardsviewholder", baseUrl+endUrl);
+        //Log.e("cardsviewholder", run.getRunner().getRunnerName() + " -> " + baseUrl+endUrl);
+
 
 
         picasso.with(ivMap.getContext())

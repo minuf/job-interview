@@ -33,6 +33,7 @@ public class RunDao {
     }
 
     public ArrayList<Run> getRuns() {
+
         ArrayList<Comment> gCommentList = new ArrayList<>();
         ArrayList<Run> gRunList = new ArrayList<>();
         String[] runFields = {"run_id", "dateTime", "distance", "pace_hour", "pace_minute", "pace_seconds",
@@ -42,6 +43,7 @@ public class RunDao {
         if (c.moveToFirst()) {
             //Recorremos el cursor hasta que no haya más registros
             do {
+
                 String run_id= c.getString(0);
                 String dateTime = c.getString(1);
                 Double distance = c.getDouble(2);

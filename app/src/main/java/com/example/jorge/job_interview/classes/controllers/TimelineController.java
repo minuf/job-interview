@@ -105,7 +105,7 @@ public class TimelineController {
     }
 
     public void mStopService() {
-        scheduleTaskExecutor.shutdown();
+        if (scheduleTaskExecutor != null) scheduleTaskExecutor.shutdown();
     }
 
     public void changeFragment() {
